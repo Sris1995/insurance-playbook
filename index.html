@@ -216,6 +216,27 @@
     font-style:italic;
   }
 
+  /* ===== MINI DISCLOSURE (repeated per-call recording reminder) ===== */
+  .mini-disclosure{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+    border:1px solid var(--red);
+    border-radius:5px;
+    padding:6px 10px;
+    margin-bottom:10px;
+  }
+  .mini-disclosure .icon{font-size:11px; flex-shrink:0;}
+  .mini-disclosure p{
+    margin:0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.01em;
+    color:var(--red);
+    font-weight:500;
+  }
+
   /* ===== STAGE NOTE (don't read aloud) ===== */
   .stage-note{
     display:flex;
@@ -731,6 +752,8 @@
     color:var(--ink);
     margin:0;
   }
+  .script-chunk-text + .mini-disclosure{margin-top:10px;}
+  .mini-disclosure + .script-chunk-text{margin-top:0;}
   .script-chunk-note{
     margin:10px 0 0;
   }
@@ -824,7 +847,9 @@ const DATA = [
     label: "Health",
     tagline: "Individual & family plans",
     desc: "Leads are often price-anchored on their current employer plan or ACA marketplace sticker shock. Anchor on total cost of care, not premium alone.",
-    opening: "Hi, this is [Name] with [Agency] — I'm reaching out because you recently looked into health coverage options. Do you have two minutes? I just want to understand what you're currently paying and see if there's a plan that covers you better for less.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi, this is [Name] with [Agency] —",
+    openingContinued: "I'm reaching out because you recently looked into health coverage options. Do you have two minutes? I just want to understand what you're currently paying and see if there's a plan that covers you better for less.",
     objections: [
       {q:"I already have coverage through my job.", a:"That's great, and I'm not looking to replace it — I just want to check one thing: does your employer plan cover your spouse or kids at a reasonable rate? A lot of families save money splitting coverage between an employer plan and a marketplace plan for dependents."},
       {q:"It's too expensive.", a:"I hear that a lot, and it's usually because people are only looking at the monthly premium. Can I ask what your deductible and out-of-pocket max are on your current plan? Sometimes a slightly higher premium actually costs less over the year because the deductible is so much lower."},
@@ -839,7 +864,9 @@ const DATA = [
     tagline: "Temporary, income-replacement coverage",
     type: "framework",
     desc: "Three questions, in order: the goal, the who, the objection. Get a clear, specific answer to each before moving on — don't feed them the answer, make them say it. Then close with a stacked-value, three-option pitch.",
-    opening: "Hi [Name], this is [Name] with [Agency]. I'm reaching out about the term life quote you requested — before I run any numbers, I just want to understand your situation so I can make sure whatever I show you actually fits. Can I ask a couple quick questions first?",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm reaching out about the term life quote you requested — before I run any numbers, I just want to understand your situation so I can make sure whatever I show you actually fits. Can I ask a couple quick questions first?",
     fwIntro: "Don't open with product features. Open with the <b>why</b>. The goal of the first two questions is to get the prospect to state, in their own words, what they're protecting and who they're protecting it for — that's what you sell back to them in the close.",
     questions: [
       {
@@ -879,7 +906,9 @@ const DATA = [
     tagline: "Permanent coverage with cash value",
     type: "framework",
     desc: "Same three-question order, but the goal here usually centers on permanence, legacy, or a cash-value need — not a temporary debt. Let them tell you which one it is before you pitch.",
-    opening: "Hi [Name], this is [Name] with [Agency]. I'm following up on the whole life quote you requested — before I show you numbers, I want to understand what you're hoping this policy actually does for you long-term. Mind if I ask a couple questions first?",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm following up on the whole life quote you requested — before I show you numbers, I want to understand what you're hoping this policy actually does for you long-term. Mind if I ask a couple questions first?",
     fwIntro: "Whole life prospects often already know they want 'something permanent' — your job in Q1 is to find out <b>why permanent matters to them</b> (legacy, guaranteed final-expense coverage, forced savings) so the close speaks to that specific reason.",
     questions: [
       {
@@ -919,7 +948,9 @@ const DATA = [
     tagline: "Small, simplified-issue coverage for end-of-life costs",
     type: "framework",
     desc: "This is the script the framework was built around: get the goal (usually burial costs), get the who (usually a child or spouse), get the real objection (usually price, health, or a past decline), then close with three stacked-value options.",
-    opening: "Hi [Name], this is [Name] with [Agency]. I work with folks to make sure funeral and end-of-life costs never fall on their family. Before I go over any options, I just want to ask a few quick questions to understand your situation — do you have a couple minutes?",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I work with folks to make sure funeral and end-of-life costs never fall on their family. Before I go over any options, I just want to ask a few quick questions to understand your situation — do you have a couple minutes?",
     fwIntro: "Never say the answer for them. \"I want to make sure my burial is covered\" has to come from <b>them</b>, not from you — that's what makes the close land later, because you're repeating their own words back to them.",
     questions: [
       {
@@ -958,7 +989,9 @@ const DATA = [
     label: "Property",
     tagline: "Homeowners & renters",
     desc: "Property leads often shop purely on premium. Reframe around replacement cost, claim experience, and bundling — and flag underinsurance risk directly.",
-    opening: "Hi [Name], this is [Name] with [Agency]. I'm calling about your home/renters insurance — I'd like to make sure you're not overpaying, and just as important, that you're not underinsured if something actually happens. Mind if I ask a few quick questions about your current policy?",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm calling about your home/renters insurance — I'd like to make sure you're not overpaying, and just as important, that you're not underinsured if something actually happens. Mind if I ask a few quick questions about your current policy?",
     objections: [
       {q:"My current rate is cheaper.", a:"Premium is only half the story — can I ask what your dwelling coverage limit and deductible are? I've seen plenty of policies that look cheap but would leave someone thousands of dollars short if they had to fully rebuild. Let's compare apples to apples."},
       {q:"I've never filed a claim, why would I switch?", a:"That's great news, and it actually works in your favor — a clean claims history usually qualifies you for a better rate somewhere else too. No harm in seeing if we can get you the same or better coverage for less."},
@@ -972,7 +1005,9 @@ const DATA = [
     label: "Auto",
     tagline: "Personal vehicle coverage",
     desc: "Auto shoppers compare on price above all else. Win by clarifying coverage gaps (liability limits, uninsured motorist) and using bundling as the price lever.",
-    opening: "Hi [Name], this is [Name] with [Agency]. I saw you were shopping for auto insurance — I can usually get you a quote in a few minutes, and I'll also flag anywhere your current coverage might be leaving you exposed. Sound good?",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I saw you were shopping for auto insurance — I can usually get you a quote in a few minutes, and I'll also flag anywhere your current coverage might be leaving you exposed. Sound good?",
     objections: [
       {q:"I already have a quote that's cheaper.", a:"Happy to be the second opinion — can you tell me the liability limits and whether it includes uninsured motorist coverage? A lot of the rock-bottom quotes cut those down to state minimums, which can leave you personally on the hook if a big accident happens."},
       {q:"I just want the state minimum, keep it cheap.", a:"I can absolutely quote that — I just want to make sure you know what it means: state minimum liability often caps out around $25,000, and the average injury claim can run well past that. If you own a home or have savings, that gap could come out of your own pocket. Want me to show you what a mid-tier limit costs, just so you can compare?"},
@@ -1098,6 +1133,27 @@ const DATA = [
         ]
       }
     ]
+  },
+  {
+    id: "followup",
+    label: "Medicare Follow-Up",
+    tagline: "Post-enrollment check-ins",
+    type: "followup",
+    desc: "Compliant follow-up cadence after enrollment. The rule that matters most: check on satisfaction, but never initiate a conversation about OEP, SEP, or switching plans — only respond if the client brings it up first.",
+    recordingDisclosure: "This call may be recorded for quality assurance or training purposes.",
+    cadence: [
+      {tag:"Day 3", intro:"Hi [Name], this is [Name] with [Agency] —", continued:"just following up a few days after your enrollment. I wanted to say thank you again for trusting me with this, and see if anything's come up already. Any questions before you've had a chance to use the plan yet?"},
+      {tag:"Day 30", intro:"Hi [Name], it's [Name] again —", continued:"it's been about a month since your plan started. Have you had a chance to use it yet, like a doctor visit or filling a prescription? I just want to make sure everything's working the way we talked about."},
+      {tag:"Day 60", intro:"Hi [Name], just checking in —", continued:"I wanted to remind you about a couple of benefits on your plan people sometimes forget about, like the nurse line or a fitness program like SilverSneakers or Silver&Fit. Have you had a chance to use any of those?"},
+      {tag:"Day 90", intro:"Hi [Name], quick check-in at the 90-day mark —", continued:"is everything still going well? Just a reminder, you can reach out to me anytime with questions. I'm always here if you need anything."}
+    ],
+    complianceNote: "You can always ask a client how they're doing and whether they're satisfied. What you cannot do is bring up the Open Enrollment Period, a Special Enrollment Period, or the idea of switching plans on your own. That conversation only starts if the client expresses dissatisfaction first — you're responding, not initiating.",
+    triggerPhrases: [
+      {q:"I don't really like this HMO plan I chose. Am I allowed to pick a different plan?", a:"Yes — since you brought that up, let's look at your options. Depending on the timing, you may qualify for the Medicare Advantage Open Enrollment Period (January 1–March 31) or a Special Enrollment Period. Let's go over what's actually available to you right now."},
+      {q:"Do I have to keep this plan until the next Annual Enrollment Period?", a:"Not necessarily — since you're asking, let's check what enrollment periods you might qualify for right now based on your situation."},
+      {q:"Can you please tell me about the other plans in my area?", a:"Sure, happy to walk through your options. Since you're the one asking, let's see what enrollment period applies to you and go from there."},
+      {q:"My doctors are no longer in the provider network.", a:"That's important to know — a network change like that can qualify you for a Special Enrollment Period. Let's check your eligibility and look at plans where your doctors are actually covered."}
+    ]
   }
 ];
 
@@ -1106,6 +1162,7 @@ let searchTerm = "";
 
 function countBadge(cat){
   if(cat.type === 'framework') return '3-Q';
+  if(cat.type === 'followup') return '4-day';
   if(cat.objectionGroups) return cat.objectionGroups.reduce((sum,g)=>sum+g.items.length,0);
   return cat.objections.length;
 }
@@ -1132,7 +1189,7 @@ function matchesSearch(obj){
   return obj.q.toLowerCase().includes(t) || obj.a.toLowerCase().includes(t);
 }
 
-function renderQuickJump(cat){
+function renderQuickJump(cat, skip){
   const allItems = cat.objectionGroups.flatMap(g => g.items);
   if(allItems.length === 0) return '';
   return `
@@ -1141,7 +1198,7 @@ function renderQuickJump(cat){
       <div class="quick-jump-list">
         ${allItems.map(o => `<button class="quick-jump-chip" data-target="obj-${slugify(o.q)}">${o.q}</button>`).join('')}
       </div>
-      <button class="jump-link" id="no-objection-jump">No objection? Skip to Part 2 — Explain A &amp; B ↓</button>
+      ${skip ? `<button class="jump-link" id="${skip.id}">${skip.label}</button>` : ''}
     </div>
   `;
 }
@@ -1149,11 +1206,6 @@ function renderQuickJump(cat){
 function renderMain(){
   const main = document.getElementById('main');
   const cat = DATA.find(c=>c.id===activeCategory);
-
-  if(cat.type === 'framework'){
-    renderFramework(main, cat);
-    return;
-  }
 
   let html = `
     <div class="category-head">
@@ -1199,7 +1251,7 @@ function renderMain(){
           `).join('')}
         </div>
         ` : ''}
-        ${renderQuickJump(cat)}
+        ${renderQuickJump(cat, {id:"no-objection-jump", label:"No objection? Skip to Part 2 — Explain A &amp; B ↓"})}
         ${renderObjectionGroups(groupsFor(1))}
       </div>
     `;
@@ -1323,7 +1375,9 @@ function renderMain(){
       `;
     }
   }
-  html += buildLegacyOpeningAndObjections(cat);
+  if(!cat.objectionGroups){
+    html += renderGenericParts(cat);
+  }
 
   main.innerHTML = html;
 
@@ -1360,6 +1414,142 @@ function renderMain(){
       if(part2) part2.scrollIntoView({behavior:'smooth', block:'start'});
     });
   }
+}
+
+function renderCompliance(cat){
+  if(!cat.complianceDisclosure) return '';
+  return `
+    <div class="compliance">
+      <div class="compliance-label">Required disclosure — read word-for-word first</div>
+      <p>${cat.complianceDisclosure}</p>
+      <div class="compliance-note">Must be stated before anything else on the call.</div>
+    </div>
+  `;
+}
+
+function renderOpeningFlow(cat){
+  return `
+    ${cat.openingIntro ? `<div class="opening"><p>${cat.openingIntro}</p></div>` : ''}
+    ${renderCompliance(cat)}
+    ${cat.openingContinued ? `<div class="opening"><p>${cat.openingContinued}</p></div>` : ''}
+    ${(!cat.openingIntro && cat.opening) ? `<div class="opening"><p>${cat.opening}</p></div>` : ''}
+  `;
+}
+
+function renderGenericParts(cat){
+  let html = '';
+
+  if(cat.type === 'followup'){
+    // Part 1 — The Cadence (Day 3 / 30 / 60 / 90)
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">1</div><div class="part-title">The Cadence</div></div>
+        <div class="script-flow">
+          ${cat.cadence.map(c=>`
+            <div class="script-chunk">
+              <div class="script-chunk-tag">${c.tag}</div>
+              <div>
+                <p class="script-chunk-text">${c.intro}</p>
+                ${cat.recordingDisclosure ? `
+                <div class="mini-disclosure">
+                  <span class="icon">⚠</span>
+                  <p>${cat.recordingDisclosure}</p>
+                </div>
+                ` : ''}
+                <p class="script-chunk-text">${c.continued}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Part 2 — The Compliance Boundary + trigger phrases
+    const groups = [{ section: "Trigger Phrases — Client-Initiated Only", items: cat.triggerPhrases }];
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">2</div><div class="part-title">The Compliance Boundary</div></div>
+        <div class="compliance">
+          <div class="compliance-label">Required rule — do not initiate</div>
+          <p>${cat.complianceNote}</p>
+          <div class="compliance-note">Only respond to these if the client says something like the phrases below, first.</div>
+        </div>
+        ${renderQuickJump({objectionGroups: groups})}
+        ${renderObjectionGroups(groups)}
+      </div>
+    `;
+    return html;
+  }
+
+  if(cat.type === 'framework'){
+    // Part 1 — Start of Script
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">1</div><div class="part-title">Start of Script</div></div>
+        ${renderOpeningFlow(cat)}
+        ${cat.fwIntro ? `
+        <div class="stage-note">
+          <span class="stage-note-icon">👁</span>
+          <div class="stage-note-body">
+            <span class="stage-note-label">Coaching note — don't read aloud</span>
+            <p>${cat.fwIntro}</p>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    `;
+
+    // Part 2 — Discovery Questions (goal / who / objection)
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">2</div><div class="part-title">Discovery Questions</div></div>
+        ${cat.questions.map((q,i)=>`
+          <div class="fw-step">
+            <div class="fw-step-num">${i+1}</div>
+            <div class="fw-step-rail">
+              <div class="fw-card">
+                <div class="fw-step-title">${q.title}</div>
+                <p class="fw-ask">${q.ask}</p>
+                <div class="fw-answers">
+                  <div class="fw-answer bad"><span class="tag">Bad answer</span><p>${q.bad}</p></div>
+                  <div class="fw-answer good"><span class="tag">Good answer</span><p>${q.good}</p></div>
+                </div>
+                <div class="fw-followup"><span class="tag">If they stall</span>${q.followUp}</div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Part 3 — The Close
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">3</div><div class="part-title">The Close</div></div>
+        <p class="fw-close-intro">${cat.close.intro}</p>
+        ${cat.close.options.map(o=>`
+          <div class="fw-option">
+            <div class="fw-option-name">${o.name}</div>
+            <p class="fw-option-stack">${o.stack}</p>
+            <div class="fw-option-price">${o.price}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    return html;
+  }
+
+  // Flat-objection categories (Health, Property, Auto) — wrap into a single group
+  const groups = [{ section: "Common Objections", items: cat.objections }];
+  html += `
+    <div class="part-block">
+      <div class="part-head"><div class="part-num">1</div><div class="part-title">Start of Script</div></div>
+      ${renderOpeningFlow(cat)}
+      ${renderQuickJump({objectionGroups: groups})}
+      ${renderObjectionGroups(groups)}
+    </div>
+  `;
+  return html;
 }
 
 function buildLegacyOpeningAndObjections(cat){
