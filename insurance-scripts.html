@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook — Insurance Scripts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --ink:#16233A;
+    --ink-soft:#2B3A54;
+    --paper:#FAF8F3;
+    --paper-dim:#F0ECE2;
+    --line: rgba(22,35,58,0.12);
+    --gold:#C89B3C;
+    --teal:#3E6C6C;
+    --red:#A33D3D;
+    --shadow: 0 8px 24px rgba(22,35,58,0.10);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+
+  .app{
+    max-width:1100px;
+    margin:0 auto;
+    background:var(--paper);
+    min-height:100vh;
+  }
+
+  /* HEADER */
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 24px 22px;
+    position:relative;
+    border-bottom:4px solid var(--gold);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,5vw,40px);
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .subhead{
+    color:rgba(250,248,243,0.65);
+    font-size:14px;
+    max-width:520px;
+    line-height:1.5;
+  }
+
+  /* SEARCH */
+  .searchbar{
+    margin-top:18px;
+    display:flex;
+    gap:8px;
+  }
+  .searchbar input{
+    flex:1;
+    background:rgba(250,248,243,0.08);
+    border:1px solid rgba(250,248,243,0.22);
+    color:var(--paper);
+    padding:11px 14px;
+    border-radius:6px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+  }
+  .searchbar input::placeholder{color:rgba(250,248,243,0.45);}
+  .searchbar input:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
+  /* TABS */
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:16px 24px;
+    background:var(--paper-dim);
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:5;
+  }
+  .tab-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.03em;
+    padding:8px 13px;
+    border-radius:5px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .tab-btn:hover{border-color:var(--gold);}
+  .tab-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .tab-btn .count{
+    opacity:.55;
+    margin-left:5px;
+  }
+
+  /* MAIN */
+  main{padding:26px 24px 60px;}
+
+  .category-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:4px;
+  }
+  .category-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0;
+    color:var(--ink);
+  }
+  .category-tagline{
+    font-size:13px;
+    color:var(--ink-soft);
+    opacity:.7;
+  }
+  .category-desc{
+    font-size:14px;
+    color:var(--ink-soft);
+    max-width:640px;
+    line-height:1.6;
+    margin:10px 0 22px;
+  }
+
+  /* OPENING SCRIPT CARD */
+  .opening{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:10px;
+    padding:20px 22px;
+    margin-bottom:28px;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .opening::before{
+    content:"OPENING SCRIPT";
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.15em;
+    color:var(--gold);
+    display:block;
+    margin-bottom:10px;
+  }
+  .opening p{
+    margin:0;
+    font-size:15.5px;
+    line-height:1.65;
+    font-family:'Fraunces',serif;
+    font-weight:400;
+  }
+  .opening p + p{margin-top:12px;}
+
+  /* ===== REQUIRED COMPLIANCE DISCLOSURE ===== */
+  .compliance{
+    background:#fff;
+    border:2px solid var(--red);
+    border-radius:10px;
+    padding:18px 20px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .compliance-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:10px;
+  }
+  .compliance-label::before{
+    content:"⚠";
+    font-size:13px;
+  }
+  .compliance p{
+    margin:0;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink);
+    font-weight:500;
+  }
+  .compliance-note{
+    margin-top:10px;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  /* ===== ELIGIBILITY CHECKLIST ===== */
+  .checklist-block{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:22px;
+  }
+  .checklist-block.accent-gold{border-left-color:var(--gold);}
+  .checklist-block.accent-red{border-left-color:var(--red);}
+  .checklist-block.accent-gold .checklist-title{color:#8A6D1A;}
+  .checklist-block.accent-red .checklist-title{color:var(--red);}
+  .checklist-block.accent-gold .checklist-progress.complete{background:var(--gold); color:var(--ink);}
+  .checklist-block.accent-red .checklist-progress.complete{background:var(--red); color:#fff;}
+  .checklist-block.accent-gold .checklist-item input[type="checkbox"]:checked{background:var(--gold); border-color:var(--gold);}
+  .checklist-block.accent-red .checklist-item input[type="checkbox"]:checked{background:var(--red); border-color:var(--red);}
+  .checklist-block.accent-gold .checklist-item input[type="checkbox"]:checked::after{color:var(--ink);}
+  .recommend-helper-wrap{margin-bottom:6px;}
+
+  /* ===== INLINE SIGNAL CHECKBOXES (auto-tally next to each question) ===== */
+  .signal-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:10px;
+  }
+  .signal-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Inter',sans-serif;
+    font-size:12px;
+    font-weight:500;
+    padding:6px 10px 6px 8px;
+    border-radius:14px;
+    cursor:pointer;
+    border:1px solid var(--line);
+    background:var(--paper-dim);
+    color:var(--ink-soft);
+  }
+  .signal-chip input[type="checkbox"]{
+    appearance:none;
+    -webkit-appearance:none;
+    width:14px;
+    height:14px;
+    border:1.5px solid var(--ink-soft);
+    border-radius:4px;
+    flex-shrink:0;
+    cursor:pointer;
+    margin:0;
+    position:relative;
+  }
+  .signal-chip.lean-ma input:checked{background:var(--gold); border-color:var(--gold);}
+  .signal-chip.lean-medsupp input:checked{background:var(--teal); border-color:var(--teal);}
+  .signal-chip.lean-ppo input:checked{background:var(--red); border-color:var(--red);}
+  .signal-chip input:checked::after{
+    content:"✓";
+    position:absolute;
+    top:-3px;
+    left:1px;
+    color:#fff;
+    font-size:10px;
+    font-weight:700;
+  }
+  .signal-chip.checked{
+    color:var(--ink);
+    border-color:transparent;
+  }
+  .signal-chip.lean-ma.checked{background:rgba(200,155,60,0.18);}
+  .signal-chip.lean-medsupp.checked{background:rgba(62,108,108,0.15);}
+  .signal-chip.lean-ppo.checked{background:rgba(163,61,61,0.12);}
+
+  .signal-tally{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    background:var(--ink);
+    border-radius:8px;
+    padding:12px 14px;
+    margin:16px 0;
+    align-items:center;
+  }
+  .signal-tally-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:rgba(250,248,243,0.55);
+    margin-right:4px;
+  }
+  .tally-chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:14px;
+    color:#fff;
+  }
+  .tally-chip.lean-ma{background:var(--gold); color:var(--ink);}
+  .tally-chip.lean-medsupp{background:var(--teal);}
+  .tally-chip.lean-ppo{background:var(--red);}
+
+  .checklist-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .checklist-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--teal);
+  }
+  .checklist-progress{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    background:var(--paper-dim);
+    border-radius:12px;
+    padding:3px 10px;
+    white-space:nowrap;
+  }
+  .checklist-progress.complete{
+    background:var(--teal);
+    color:#fff;
+  }
+  .checklist-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:8px 4px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .checklist-item:last-child{border-bottom:none;}
+  .checklist-item input[type="checkbox"]{
+    appearance:none;
+    -webkit-appearance:none;
+    width:19px;
+    height:19px;
+    border:1.5px solid var(--ink-soft);
+    border-radius:5px;
+    flex-shrink:0;
+    margin-top:1px;
+    cursor:pointer;
+    position:relative;
+    background:var(--paper);
+  }
+  .checklist-item input[type="checkbox"]:checked{
+    background:var(--teal);
+    border-color:var(--teal);
+  }
+  .checklist-item input[type="checkbox"]:checked::after{
+    content:"✓";
+    position:absolute;
+    top:-2px;
+    left:3px;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+  }
+  .checklist-item label{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .checklist-item.checked label{
+    color:var(--ink-soft);
+    text-decoration:line-through;
+    text-decoration-color:rgba(62,108,108,0.4);
+  }
+  .checklist-reset{
+    margin-top:12px;
+    background:none;
+    border:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    text-decoration:underline;
+    cursor:pointer;
+    padding:0;
+  }
+
+  /* ===== AUTO-COMPUTED ELIGIBILITY RESULT ===== */
+  .eligibility-result{
+    margin-top:2px;
+    margin-bottom:22px;
+    padding:14px 16px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:var(--paper-dim);
+    display:block;
+  }
+  .eligibility-result .result-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    display:block;
+    margin-bottom:8px;
+  }
+  .eligibility-result .elig-line{
+    margin:0;
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink);
+    font-weight:500;
+  }
+  .eligibility-result .elig-line + .elig-line{margin-top:6px;}
+  .eligibility-result .elig-good{color:#2C5F5F;}
+  .eligibility-result .elig-bad{color:var(--red);}
+  .eligibility-result .elig-unknown{color:var(--ink-soft); font-weight:400;}
+  .eligibility-result.state-full{background:rgba(62,108,108,0.1); border-color:var(--teal);}
+  .eligibility-result.state-partial{background:rgba(200,155,60,0.12); border-color:var(--gold);}
+  .eligibility-result.state-blocked{background:rgba(163,61,61,0.06); border-color:var(--red);}
+  .eligibility-result.state-unknown{background:var(--paper-dim); border-color:var(--line);}
+
+  /* ===== MINI DISCLOSURE (repeated per-call recording reminder) ===== */
+  .mini-disclosure{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+    border:1px solid var(--red);
+    border-radius:5px;
+    padding:6px 10px;
+    margin-bottom:10px;
+  }
+  .mini-disclosure .icon{font-size:11px; flex-shrink:0;}
+  .mini-disclosure p{
+    margin:0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.01em;
+    color:var(--red);
+    font-weight:500;
+  }
+
+  /* ===== STAGE NOTE (don't read aloud) ===== */
+  .stage-note{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    background:#FFF4CC;
+    border:1px solid #E8C34A;
+    border-radius:6px;
+    padding:9px 12px;
+    margin:12px 0;
+  }
+  .stage-note-icon{
+    font-size:13px;
+    line-height:1.4;
+    flex-shrink:0;
+  }
+  .stage-note-body{flex:1;}
+  .stage-note-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:#8A6D1A;
+    display:block;
+    margin-bottom:2px;
+  }
+  .stage-note p{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    line-height:1.5;
+    color:#5C4A10;
+    font-style:italic;
+  }
+
+  /* OBJECTION LIST */
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:3px solid var(--red);
+    border-radius:8px;
+    margin-bottom:10px;
+    overflow:hidden;
+    transition:box-shadow .15s ease;
+  }
+  .card.answered{border-left-color:var(--teal);}
+  .card:hover{box-shadow:var(--shadow);}
+
+  .card-q{
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    padding:15px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .card-q .qtext{
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .card-q .qtext::before{
+    content:"“";
+    color:var(--red);
+    font-family:'Fraunces',serif;
+    font-size:18px;
+    margin-right:2px;
+  }
+  .branch-card{border-left-color:var(--teal);}
+  .branch-card .qtext::before{content:"?"; color:var(--teal); font-family:'IBM Plex Mono',monospace; font-size:14px;}
+  .branch-group .obj-group-head{background:var(--teal);}
+  .branch-group .obj-group-head .chevron{color:#fff;}
+
+  /* ===== PLAN TYPE BUTTONS (MAPD / MA / PDP & Med Supp) ===== */
+  .plan-buttons{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin:16px 0;
+  }
+  .plan-card{border-left-color:var(--gold); border-width:1px;}
+  .plan-card .qtext{
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-size:13px;
+  }
+  .plan-card .qtext::before{content:none;}
+  .plan-card .card-q{padding:14px 16px;}
+  .deep-dive{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--gold);
+  }
+  .deep-dive-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:#8A6D1A;
+    display:block;
+    margin-bottom:8px;
+  }
+  .deep-dive p{
+    margin:0;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .already-step{margin-bottom:14px;}
+  .already-step:last-child{margin-bottom:0;}
+  .already-step-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:4px;
+  }
+  .already-step p{
+    margin:0;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink);
+  }
+  .chevron{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--ink-soft);
+    transition:transform .18s ease;
+    flex-shrink:0;
+  }
+  .card.open .chevron{transform:rotate(90deg);}
+
+  .card-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .22s ease;
+  }
+  .card.open .card-a{max-height:1000px;}
+  .card-a-inner{
+    padding:0 18px 18px 18px;
+    border-top:1px solid var(--line);
+    margin-top:0;
+  }
+  .card-a-inner .say-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    color:var(--teal);
+    margin:14px 0 6px;
+  }
+  .card-a-inner p{
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+
+  /* ===== FRAMEWORK (Term / Whole / Final Expense) ===== */
+  .fw-intro{
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 18px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    margin-bottom:26px;
+  }
+  .fw-intro b{color:var(--ink);}
+
+  .fw-step{
+    display:grid;
+    grid-template-columns:52px 1fr;
+    gap:16px;
+    margin-bottom:22px;
+  }
+  .fw-step-num{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:30px;
+    color:var(--gold);
+    line-height:1;
+    text-align:center;
+    padding-top:2px;
+  }
+  .fw-step-rail{
+    position:relative;
+  }
+  .fw-step-rail::before{
+    content:"";
+    position:absolute;
+    left:-38px;
+    top:38px;
+    bottom:-22px;
+    width:1px;
+    background:var(--line);
+  }
+  .fw-step:last-of-type .fw-step-rail::before{display:none;}
+
+  .fw-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .fw-step-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--teal);
+    margin-bottom:8px;
+  }
+  .fw-ask{
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    line-height:1.55;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+  .fw-ask::before{content:"“"; color:var(--gold); font-size:20px;}
+  .fw-ask::after{content:"”"; color:var(--gold); font-size:20px;}
+
+  .fw-answers{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  @media(min-width:560px){
+    .fw-answers{grid-template-columns:1fr 1fr;}
+  }
+  .fw-answer{
+    border-radius:6px;
+    padding:10px 12px;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .fw-answer.bad{
+    background:rgba(163,61,61,0.07);
+    border:1px solid rgba(163,61,61,0.25);
+  }
+  .fw-answer.good{
+    background:rgba(62,108,108,0.08);
+    border:1px solid rgba(62,108,108,0.3);
+  }
+  .fw-answer .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:4px;
+  }
+  .fw-answer.bad .tag{color:var(--red);}
+  .fw-answer.good .tag{color:var(--teal);}
+  .fw-answer p{margin:0; color:var(--ink);}
+
+  .fw-followup{
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px dashed var(--line);
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+  .fw-followup .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:block;
+    margin-bottom:4px;
+  }
+
+  .fw-close{
+    margin-top:32px;
+    padding-top:24px;
+    border-top:2px solid var(--ink);
+  }
+  .fw-close-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .fw-close-head h3{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    margin:0;
+    color:var(--ink);
+  }
+  .fw-close-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    opacity:.75;
+  }
+  .fw-close-intro{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    margin:8px 0 18px;
+  }
+
+  .fw-option{
+    background:var(--ink);
+    color:var(--paper);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+  }
+  .fw-option-name{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:8px;
+  }
+  .fw-option-stack{
+    font-size:14px;
+    line-height:1.6;
+    color:rgba(250,248,243,0.9);
+    margin:0 0 10px;
+  }
+  .fw-option-price{
+    font-family:'Fraunces',serif;
+    font-size:15px;
+    color:var(--paper);
+    border-top:1px solid rgba(250,248,243,0.18);
+    padding-top:10px;
+  }
+  .fw-option-price b{color:var(--gold);}
+
+  /* ===== REFERENCE (Medicare parts & plan types) ===== */
+  .ref-block{margin-bottom:28px;}
+  .ref-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  @media(min-width:640px){
+    .ref-grid{grid-template-columns:1fr 1fr;}
+  }
+  .ref-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .ref-card .ref-name{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--teal);
+    margin-bottom:4px;
+  }
+  .ref-card .ref-title{
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .ref-card p{
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .ref-card.plan-type{border-left-color:var(--gold);}
+  .ref-card.plan-type .ref-name{color:var(--gold);}
+
+  /* ===== OBJECTION GROUPS (accordion sections) ===== */
+  .obj-group{margin-bottom:14px;}
+  .obj-group-head{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    border-radius:7px;
+    padding:12px 16px;
+    cursor:pointer;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.05em;
+    text-align:left;
+  }
+  .obj-group-head .count{
+    opacity:.6;
+    font-size:11px;
+  }
+  .obj-group-head .chevron{
+    font-size:14px;
+    color:var(--gold);
+    transition:transform .18s ease;
+    flex-shrink:0;
+  }
+  .obj-group.open .obj-group-head .chevron{transform:rotate(90deg);}
+  .obj-group-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .obj-group.open .obj-group-body{max-height:12000px;}
+  .obj-group-body-inner{padding-top:10px;}
+
+  /* ===== SCRIPT PARTS (numbered sections, e.g. Medicare) ===== */
+  .part-block{margin-bottom:30px;}
+  .part-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .part-num{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--gold);
+    background:var(--ink);
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .part-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .jump-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:12px;
+    background:none;
+    border:1px dashed var(--gold);
+    color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .jump-link:hover{background:rgba(200,155,60,0.1);}
+  .quick-jump .jump-link{
+    color:var(--paper);
+    border-color:var(--gold);
+    background:rgba(250,248,243,0.06);
+    display:flex;
+    width:100%;
+    justify-content:center;
+  }
+  .quick-jump .jump-link:hover{background:rgba(200,155,60,0.2);}
+
+  /* ===== STRATEGY NOTE ===== */
+  .strategy-block{
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:18px;
+  }
+  .strategy-block h4{
+    font-family:'Fraunces',serif;
+    font-size:15px;
+    margin:0 0 12px;
+    color:var(--ink);
+  }
+  .strategy-step{
+    display:flex;
+    gap:10px;
+    margin-bottom:9px;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .strategy-step:last-of-type{margin-bottom:0;}
+  .strategy-step .s-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    color:var(--teal);
+    flex-shrink:0;
+    white-space:nowrap;
+    padding-top:1px;
+  }
+  .strategy-step p{margin:0; color:var(--ink-soft);}
+  .strategy-source{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    opacity:.7;
+  }
+
+  /* ===== FLOWING SCRIPT CHUNKS (e.g. Plan Types script) ===== */
+  .script-flow{margin-bottom:6px;}
+  .script-chunk{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .script-chunk:last-of-type{border-bottom:none;}
+  .script-chunk-tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--teal);
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:4px 9px;
+    height:fit-content;
+    white-space:nowrap;
+  }
+  .script-chunk-text{
+    font-family:'Fraunces',serif;
+    font-size:15.5px;
+    line-height:1.65;
+    color:var(--ink);
+    margin:0;
+  }
+  .script-chunk-text + .mini-disclosure{margin-top:10px;}
+  .mini-disclosure + .script-chunk-text{margin-top:0;}
+  .script-chunk-note{
+    margin:10px 0 0;
+  }
+  @media(max-width:520px){
+    .script-chunk{grid-template-columns:1fr; gap:6px;}
+    .script-chunk-tag{width:fit-content;}
+  }
+
+  /* ===== RESISTANCE NOTE (fallback if they push back) ===== */
+  .resistance-note{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin-top:10px;
+    padding:9px 12px;
+    border-radius:6px;
+    background:rgba(200,155,60,0.08);
+    border:1px dashed var(--gold);
+  }
+  .resistance-icon{font-size:12px; color:#8A6D1A; flex-shrink:0; margin-top:1px;}
+  .resistance-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#8A6D1A;
+    display:block;
+    margin-bottom:3px;
+  }
+  .resistance-note p{
+    margin:0;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+
+  /* ===== TRUST PHRASES QUICK-REFERENCE ===== */
+  .trust-phrases{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .trust-phrases-row{
+    display:grid;
+    grid-template-columns:1fr 1.6fr;
+    gap:10px;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .trust-phrases-row:last-child{border-bottom:none;}
+  .trust-phrases-row .situation{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--teal);
+    font-weight:500;
+  }
+  .trust-phrases-row .phrase{
+    font-size:13px;
+    line-height:1.5;
+    color:var(--ink);
+    font-style:italic;
+  }
+  @media(max-width:520px){
+    .trust-phrases-row{grid-template-columns:1fr;}
+  }
+
+  /* ===== QUICK JUMP INDEX ===== */
+  .quick-jump{
+    background:var(--ink);
+    border-radius:8px;
+    padding:14px 16px;
+    margin-bottom:20px;
+  }
+  .quick-jump-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+  .quick-jump-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .quick-jump-chip{
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--paper);
+    background:rgba(250,248,243,0.08);
+    border:1px solid rgba(250,248,243,0.2);
+    border-radius:16px;
+    padding:6px 12px;
+    cursor:pointer;
+    text-align:left;
+    line-height:1.3;
+  }
+  .quick-jump-chip:hover{
+    background:rgba(200,155,60,0.25);
+    border-color:var(--gold);
+  }
+  @keyframes flashHighlight{
+    0%{background:rgba(200,155,60,0.35);}
+    100%{background:transparent;}
+  }
+  .card.flash{animation:flashHighlight 1.4s ease-out;}
+
+  .branch-jump{background:var(--teal);}
+  .branch-jump .quick-jump-label{color:#fff;}
+  .branch-chip{
+    background:rgba(255,255,255,0.12);
+    border-color:rgba(255,255,255,0.28);
+  }
+  .branch-chip:hover{background:rgba(255,255,255,0.24); border-color:#fff;}
+  @keyframes flashHighlightTeal{
+    0%{background:rgba(62,108,108,0.28);}
+    100%{background:transparent;}
+  }
+  .branch-card.flash{animation:flashHighlightTeal 1.4s ease-out;}
+
+  footer{
+    text-align:center;
+    padding:18px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:rgba(250,248,243,0.4);
+  }
+
+  @media (max-width:640px){
+    header{padding:22px 16px 18px;}
+    nav.tabs{padding:12px 16px;}
+    main{padding:20px 16px 50px;}
+    .card-q .qtext{font-size:13.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="eyebrow">Field Playbook</div>
+    <h1>Call Scripts &amp; Objections</h1>
+    <div class="subhead">Openings and objection responses for Health, Life, Property, and Auto. Tap a line to see the response.</div>
+    <div class="searchbar">
+      <input type="text" id="search" placeholder="Search objections, e.g. &quot;too expensive&quot;, &quot;already have coverage&quot;…">
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs"></nav>
+
+  <main id="main"></main>
+
+  <footer>Internal use — update wording to match your state's compliance requirements</footer>
+</div>
+
+<script>
+const DATA = [
+  {
+    id: "health",
+    label: "Health",
+    tagline: "Individual & family plans",
+    desc: "Leads are often price-anchored on their current employer plan or ACA marketplace sticker shock. Anchor on total cost of care, not premium alone.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi, this is [Name] with [Agency] —",
+    openingContinued: "I'm reaching out because you recently looked into health coverage options. Do you have two minutes? I just want to understand what you're currently paying and see if there's a plan that covers you better for less.",
+    objections: [
+      {q:"I already have coverage through my job.", a:"That's great, and I'm not looking to replace it — I just want to check one thing: does your employer plan cover your spouse or kids at a reasonable rate? A lot of families save money splitting coverage between an employer plan and a marketplace plan for dependents."},
+      {q:"It's too expensive.", a:"I hear that a lot, and it's usually because people are only looking at the monthly premium. Can I ask what your deductible and out-of-pocket max are on your current plan? Sometimes a slightly higher premium actually costs less over the year because the deductible is so much lower."},
+      {q:"I don't need insurance, I'm healthy.", a:"That's actually the best time to lock in a low rate — pricing is based on your health today, not five years from now. And health plans aren't just for when you're sick; a lot of what you'd pay for goes toward preventive care that's fully covered."},
+      {q:"I need to talk to my spouse first.", a:"Totally understand, this is a household decision. What if I sent over a one-page comparison you could both look at tonight? That way when we talk again you're not starting from scratch."},
+      {q:"Can I get coverage anytime, or is there a deadline?", a:"Outside open enrollment, you generally need a qualifying life event — job change, marriage, new baby, moving — to enroll in an ACA plan. If none of those apply, we can look at short-term or supplemental options in the meantime so you're not left completely uncovered."}
+    ]
+  },
+  {
+    id: "term",
+    label: "Life — Term",
+    tagline: "Temporary, income-replacement coverage",
+    type: "framework",
+    desc: "Three questions, in order: the goal, the who, the objection. Get a clear, specific answer to each before moving on — don't feed them the answer, make them say it. Then close with a stacked-value, three-option pitch.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm reaching out about the term life quote you requested — before I run any numbers, I just want to understand your situation so I can make sure whatever I show you actually fits. Can I ask a couple quick questions first?",
+    fwIntro: "Don't open with product features. Open with the <b>why</b>. The goal of the first two questions is to get the prospect to state, in their own words, what they're protecting and who they're protecting it for — that's what you sell back to them in the close.",
+    questions: [
+      {
+        title:"The Goal (Why)",
+        ask:"What's the goal of the life insurance? If something happened to you, what do you want to make sure is taken care of?",
+        bad:"\"I just want to make sure everything's fine.\" — too vague to sell against.",
+        good:"\"I want to make sure the mortgage is covered\" / \"I don't want my income stopping to wreck my family's plans.\" — a specific, sellable goal.",
+        followUp:"If they stay vague: \"When you say 'taken care of' — do you mean the mortgage, your income for the kids, or something else? What's the actual worry?\" Don't move on until you get a specific goal."
+      },
+      {
+        title:"The Who (Pain)",
+        ask:"If something happened to you tomorrow, who would be stuck covering [the mortgage / the lost income / the kids' expenses]?",
+        bad:"\"I don't know\" or \"I guess it'd be figured out.\" — no real person named, no urgency.",
+        good:"\"It'd be my wife\" / \"My husband would have to cover it alone.\" — a named person you can build the pain around.",
+        followUp:"Once you have the who, paint the picture: \"Walk me through that — could [name] realistically cover the mortgage on one income? What would they actually have to do — sell the house, move the kids, take on debt?\" Get them to say the consequence out loud, don't say it for them."
+      },
+      {
+        title:"The Objection (Variable)",
+        ask:"It sounds like this really matters to you — so what's kept you from putting a policy in place already?",
+        bad:"\"I just haven't gotten around to it.\" — no real variable, dig one level deeper.",
+        good:"\"Everything I've seen is way more than I want to pay\" / \"I don't know how much coverage I actually need.\" — a solvable variable (price, confusion, term length).",
+        followUp:"Solve for X before pitching: \"So as long as we can find something that fits your budget and covers [the goal] for [the who] — is there anything else stopping you from moving forward today?\" Get a 'no' here before you show pricing."
+      }
+    ],
+    close: {
+      intro: "Present three options, cheapest to richest. For each one: (1) name the coverage, (2) re-state the goal and the who by name, (3) stack the consequence you avoid, THEN (4) give the price last — never lead with the number.",
+      options: [
+        {name:"Option 1 — Starter", stack:"This covers [$250,000] for 20 years — enough that if something happened to you, [name] wouldn't have to sell the house or move the kids out of their schools. The mortgage gets paid off, full stop.", price:"That protection for [name] runs about <b>$XX/month</b>."},
+        {name:"Option 2 — Most Popular", stack:"This is the level most people in your situation choose — [$500,000] for 20 years. It pays off the mortgage AND replaces several years of your income, so [name] isn't just surviving, they're not forced to change how the family lives.", price:"That full protection is about <b>$XX/month</b>."},
+        {name:"Option 3 — Complete", stack:"This is [$750,000–$1,000,000] over 30 years — mortgage gone, income replaced through the kids being fully independent, no gaps. [Name] never has to think about money on top of everything else.", price:"Full peace of mind for the whole term runs about <b>$XX/month</b>."}
+      ]
+    }
+  },
+  {
+    id: "whole",
+    label: "Life — Whole",
+    tagline: "Permanent coverage with cash value",
+    type: "framework",
+    desc: "Same three-question order, but the goal here usually centers on permanence, legacy, or a cash-value need — not a temporary debt. Let them tell you which one it is before you pitch.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm following up on the whole life quote you requested — before I show you numbers, I want to understand what you're hoping this policy actually does for you long-term. Mind if I ask a couple questions first?",
+    fwIntro: "Whole life prospects often already know they want 'something permanent' — your job in Q1 is to find out <b>why permanent matters to them</b> (legacy, guaranteed final-expense coverage, forced savings) so the close speaks to that specific reason.",
+    questions: [
+      {
+        title:"The Goal (Why)",
+        ask:"What's the goal of a permanent policy for you — what do you want it to guarantee no matter when you pass?",
+        bad:"\"I just want life insurance that doesn't expire.\" — states the product, not the goal.",
+        good:"\"I want to leave something for my grandkids\" / \"I never want my family stuck figuring out my funeral costs, no matter how old I am.\" — a specific, permanent goal.",
+        followUp:"If vague: \"Is it more about leaving money behind, or making sure nobody's ever caught without coverage on you? What matters most?\" Get the real reason permanence appeals to them."
+      },
+      {
+        title:"The Who (Pain)",
+        ask:"Whenever that day comes, who's the one who'd actually be affected if this wasn't in place — who's counting on it?",
+        bad:"\"Nobody really, I just want it done right.\" — push for a name; there almost always is one.",
+        good:"\"My daughter\" / \"My wife — I don't want her dealing with anything financial on top of losing me.\" — a named beneficiary.",
+        followUp:"Paint the picture: \"If this wasn't in place, what would [name] actually have to deal with — on top of everything else?\" Let them say it."
+      },
+      {
+        title:"The Objection (Variable)",
+        ask:"What's kept you from setting this up already?",
+        bad:"\"I haven't really looked into it.\" — dig deeper.",
+        good:"\"Whole life always seemed too expensive\" / \"I don't understand the cash value part.\" — a solvable variable.",
+        followUp:"Solve for X: \"If we can find a coverage amount and premium that's comfortable for you, and I can explain the cash value clearly — is there anything else holding you back?\" Get a 'no' before pitching."
+      }
+    ],
+    close: {
+      intro: "Present three permanent coverage tiers. Re-anchor every option on the goal and the who by name before the price.",
+      options: [
+        {name:"Option 1 — Starter", stack:"[$15,000] guaranteed for life. This makes sure [name] is never stuck covering final expenses, no matter when the day comes — it's locked in and it can't lapse from age or health changes.", price:"That guarantee for [name] is about <b>$XX/month</b>."},
+        {name:"Option 2 — Most Popular", stack:"[$30,000] guaranteed for life, building cash value you can access along the way. It covers final expenses fully and leaves [name] something extra — plus you've got a living benefit if you ever need it.", price:"That full protection runs about <b>$XX/month</b>."},
+        {name:"Option 3 — Legacy", stack:"[$50,000+] guaranteed for life with meaningful cash value growth. This isn't just final expenses covered — it's a real legacy for [name], and money you can tap into yourself if life throws something at you first.", price:"That level of protection is about <b>$XX/month</b>."}
+      ]
+    }
+  },
+  {
+    id: "final",
+    label: "Life — Final Expense",
+    tagline: "Small, simplified-issue coverage for end-of-life costs",
+    type: "framework",
+    desc: "This is the script the framework was built around: get the goal (usually burial costs), get the who (usually a child or spouse), get the real objection (usually price, health, or a past decline), then close with three stacked-value options.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I work with folks to make sure funeral and end-of-life costs never fall on their family. Before I go over any options, I just want to ask a few quick questions to understand your situation — do you have a couple minutes?",
+    fwIntro: "Never say the answer for them. \"I want to make sure my burial is covered\" has to come from <b>them</b>, not from you — that's what makes the close land later, because you're repeating their own words back to them.",
+    questions: [
+      {
+        title:"The Goal (Why)",
+        ask:"What's the goal of the life insurance — what do you want to make sure gets taken care of?",
+        bad:"\"I just want everything taken care of.\" — too vague, keep digging.",
+        good:"\"I want my burial expenses covered.\" — the specific, sellable goal for this product.",
+        followUp:"If vague: \"Do you mean your funeral costs specifically, or something else? What's the piece that worries you?\" Don't move to Q2 until they say it plainly."
+      },
+      {
+        title:"The Who (Pain)",
+        ask:"If you passed away tomorrow, who would be responsible for covering your burial expenses?",
+        bad:"\"I don't know, I guess it'd get figured out.\" — no named person, push for one.",
+        good:"\"It'd be my daughter, Samantha.\" — a specific person you now build the close around.",
+        followUp:"Paint the picture: \"Is Samantha in a position to come up with $10,000–$15,000 out of pocket? What would she actually have to do — take a loan, ask the church, start a GoFundMe?\" Let them describe the consequence themselves."
+      },
+      {
+        title:"The Objection (Variable)",
+        ask:"It sounds like this really matters to you — so what's kept you from putting a solution in place already?",
+        bad:"\"I just haven't found anything.\" — not specific, dig once more.",
+        good:"\"Everyone keeps quoting me a 2-year waiting period\" / \"I keep getting declined for my health\" / \"It's always more than I can afford.\" — a solvable variable.",
+        followUp:"Solve for X before pitching: \"So as long as we can find something you can qualify for, with no [waiting period / high cost] — is there anything else stopping you from getting this in place for Samantha?\" Get a 'no' here first."
+      }
+    ],
+    close: {
+      intro: "Three options, cheapest to richest. For each: name the coverage, repeat the goal and the who by name, stack what it spares them, then the price last.",
+      options: [
+        {name:"Option 1 — Basic", stack:"This is the beginner program — [$10,000] to make sure your funeral expenses are completely covered. Samantha will never have to start a GoFundMe, ask the church, or do a fish fry dinner. She's never stuck.", price:"That protection for Samantha is <b>$65/month</b>."},
+        {name:"Option 2 — Common (most chosen)", stack:"This is what most folks in your position choose — [$20,000]. It covers everything Samantha needs so she never has to ask friends, beg, or come out of her own pocket. And it means she'll always know you thought of her and protected her.", price:"That full coverage is <b>$110/month</b>."},
+        {name:"Option 3 — Complete", stack:"[$30,000+] — this covers the funeral fully with room to spare for any other costs that come up, medical bills, travel for family, anything. Samantha is completely taken care of, no exceptions.", price:"That level of protection runs about <b>$XX/month</b>."}
+      ]
+    },
+    reEngageNote: "Don't give up after one or two unanswered calls. Try reaching a lead several times across different times of day before shelving them — and if you still can't connect, it's worth one more attempt a few months out rather than writing them off. Circumstances change, and plenty of sales come from a lead who wasn't ready the first, second, or even fifth time.",
+    reEngageScript: [
+      {tag:"General Re-Contact", text:"Hi [Name], this is [Name] — we spoke a while back about making sure your final expenses were taken care of, but I wasn't able to catch you again after that. I wanted to check in and see if now's a better time to go over it."},
+      {tag:"If They Weren't Ready", text:"Last time we talked, the timing wasn't quite right. I wanted to touch base and see if anything's changed, or if it's still on your mind."},
+      {tag:"If Underwriting Was the Issue", text:"Last time we talked, we ran into a snag getting you approved. I've been digging into some other options since then, and I think I found something that could actually work for you — do you have a few minutes?"}
+    ],
+    referralNote: "Most people would give a referral if you just asked — the problem is most agents ask too vaguely. \"Do you know anyone else who could use my help?\" hands someone the whole world to think about, so they usually draw a blank. Get specific instead, using something you already know about them — where they worship, who they golf with, their neighborhood — and it gets much easier for them to think of a name.",
+    referralScript: [
+      {tag:"Specific Ask", text:"Before we wrap up — who's someone you know, maybe someone you see regularly, who might also want this same peace of mind you just got today? A neighbor, someone from church, a friend you talk to often?"},
+      {tag:"Reinforce the Value", text:"You just made sure your family won't be stuck with a bill they can't afford. Is there anyone else in your life you'd want to have that same protection?"}
+    ]
+  },
+  {
+    id: "property",
+    label: "Property",
+    tagline: "Homeowners & renters",
+    desc: "Property leads often shop purely on premium. Reframe around replacement cost, claim experience, and bundling — and flag underinsurance risk directly.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I'm calling about your home/renters insurance — I'd like to make sure you're not overpaying, and just as important, that you're not underinsured if something actually happens. Mind if I ask a few quick questions about your current policy?",
+    objections: [
+      {q:"My current rate is cheaper.", a:"Premium is only half the story — can I ask what your dwelling coverage limit and deductible are? I've seen plenty of policies that look cheap but would leave someone thousands of dollars short if they had to fully rebuild. Let's compare apples to apples."},
+      {q:"I've never filed a claim, why would I switch?", a:"That's great news, and it actually works in your favor — a clean claims history usually qualifies you for a better rate somewhere else too. No harm in seeing if we can get you the same or better coverage for less."},
+      {q:"I'm renting, I don't need insurance.", a:"Your landlord's policy only covers the building itself, not your belongings, and it won't cover you if someone gets hurt in your unit and sues. Renters insurance is usually surprisingly cheap — often $15 to $20 a month — for real protection."},
+      {q:"What's actually covered vs. not covered?", a:"Standard policies typically cover fire, theft, wind, and liability, but usually exclude flood and sometimes earthquake — those need separate policies. Let's go through your specific risks, like whether you're in a flood zone, so there are no surprises later."},
+      {q:"Can I bundle this with my auto policy?", a:"Yes, and it's one of the easiest ways to save — most carriers give a discount of 10 to 20% when you bundle home and auto. Want me to run a quote with both together so you can see the actual savings?"}
+    ]
+  },
+  {
+    id: "auto",
+    label: "Auto",
+    tagline: "Personal vehicle coverage",
+    desc: "Auto shoppers compare on price above all else. Win by clarifying coverage gaps (liability limits, uninsured motorist) and using bundling as the price lever.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We work with several carriers in your area, but we do not offer every plan available.",
+    openingIntro: "Hi [Name], this is [Name] with [Agency] —",
+    openingContinued: "I saw you were shopping for auto insurance — I can usually get you a quote in a few minutes, and I'll also flag anywhere your current coverage might be leaving you exposed. Sound good?",
+    objections: [
+      {q:"I already have a quote that's cheaper.", a:"Happy to be the second opinion — can you tell me the liability limits and whether it includes uninsured motorist coverage? A lot of the rock-bottom quotes cut those down to state minimums, which can leave you personally on the hook if a big accident happens."},
+      {q:"I just want the state minimum, keep it cheap.", a:"I can absolutely quote that — I just want to make sure you know what it means: state minimum liability often caps out around $25,000, and the average injury claim can run well past that. If you own a home or have savings, that gap could come out of your own pocket. Want me to show you what a mid-tier limit costs, just so you can compare?"},
+      {q:"My car is old, do I even need full coverage?", a:"Good question — once a car's value drops below a few thousand dollars, full coverage often isn't worth the extra premium since the payout is capped at the car's value. Let's check your car's actual value and I'll tell you honestly if dropping comp/collision makes sense."},
+      {q:"I have a DUI/accident on my record, can you even cover me?", a:"Yes, most carriers can still write a policy, it just affects the rate for a few years. Let's get the quote and I'll also check if there's a program that rewards clean driving going forward to bring the rate back down faster."},
+      {q:"I want to shop around more before deciding.", a:"That's smart, you should compare. Just make sure whoever you're comparing is quoting the same liability limits and deductibles — that's where a lot of 'cheaper' quotes fall apart. Want me to email you this quote so you have a real number to hold others against?"}
+    ]
+  },
+  {
+    id: "medicare",
+    label: "Medicare",
+    tagline: "Advantage, Supplement & Part D",
+    desc: "Medicare prospects are often confused (not just price-sensitive) and worried about losing their doctors or making an irreversible mistake. Lead with clarity and enrollment timing, not a hard pitch — trust is what closes this category.",
+    voicemailScript: "Hi [Name], this is [Name] with [Agency] — sorry I missed you! I'm a licensed Medicare agent, and I'm reaching out because you recently looked into your Medicare options. I'd love to go over a couple of things that could either save you money or make sure you're not missing out on any benefits you qualify for — no pressure at all. Give me a call back whenever works for you at [phone number]. Again, this is [Name] with [Agency], and my number is [phone number]. Thanks, and I look forward to connecting!",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We do not offer every plan available in your area. Currently, we represent 0-78 organizations which offer 0-2,613 products in your area. Please contact medicare.gov, 1-800-MEDICARE, or your local State Health Insurance Program (SHIP) to get information on all of your options.",
+    openingIntro: "Hi [Name], how are you doing today? This is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself, but —",
+    nameAsk: {tag:"Full Name", text:"So I've got you down as [Name] on my end, but before we dive in, would you mind giving me your full name, first and last, just so I have everything exactly right?"},
+    openingContinued: "Perfect, thank you, [Prospect Name] — I appreciate that. So like I mentioned, what I do is help folks like yourself compare their Medicare options, just to make sure you're not overpaying or missing out on anything you're actually entitled to. Do you have a few minutes so I can learn a little about your situation?",
+    intakeScript: [
+      {tag:"Date of Birth", text:"Great, thank you. And could I grab your date of birth too? That just helps me make sure everything lines up correctly on my end.", resistance:"Totally understandable! Even just your age range helps me point you in the right direction — are you in your 50s, 60s, or beyond?"},
+      {tag:"Zip Code", text:"Perfect — one last quick one, what zip code are you in? Coverage and pricing can vary quite a bit by area, so I want to make sure I'm only showing you what's actually available where you live."}
+    ],
+    zipReluctance: [
+      {q:"I don't want to give you my zip code.", a:"That's a completely fair concern, and a lot of people feel that way. Your zip code just helps me pull up the right plans for your specific area — carriers and plan options actually vary by location, so without it I can't show you what's actually available to you. I won't use it for anything else, and you're under no obligation to enroll in anything today. If you'd still rather not share it yet, no worries — let's just talk about what you're looking for in coverage first, and we can look up specific options together once you're comfortable."}
+    ],
+    anchorQuestions: "If you freeze after the opener, don't panic — fall back on one of these to get the conversation moving again: \"How long have you been on your current plan?\" or \"Are there any doctors or prescriptions you want to make sure stay covered?\" Either one gets them talking and buys you time to find your footing.",
+    discoveryBeforePitch: "Don't skip straight into a benefits pitch, even if they ask directly what's available. Insert two quick discovery questions first: \"Are you currently on Original Medicare, or do you have a supplement?\" and \"Is there anything about your current coverage that's felt like a gap or a frustration?\" This makes the pitch feel tailored instead of canned, especially for a skeptical client.",
+    alreadyHaveMedicareScript: [
+      {tag:"Acknowledge", text:"That's great to hear — a lot of people I talk to already have something in place. I'm not calling to sell you something new necessarily, I just want to make sure what you have is still working for you."},
+      {tag:"Ask What They Have", text:"Can I ask what you currently have — is it Original Medicare on its own, a Medicare Advantage plan, or do you have a Medicare Supplement alongside Original Medicare?"},
+      {tag:"Transition to Review", text:"Got it, thank you. Since plans and networks can change every year even if you don't touch anything, would you mind if I ran a quick, no-obligation comparison to see how your current plan stacks up? If it's still the best fit, I'll tell you that directly — and if there's something better, that's completely your call."}
+    ],
+    trustPhrases: [
+      {situation:"They seem guarded", phrase:"There's no rush — let's just talk through your options."},
+      {situation:"They had a bad experience", phrase:"I'm sorry to hear that. I want this to be a completely different experience for you."},
+      {situation:"They're unsure", phrase:"Great question — let me explain that clearly."},
+      {situation:"They feel pressured", phrase:"My only goal today is to give you information. The decision is 100% yours."},
+      {situation:"They're skeptical", phrase:"I completely understand the skepticism — let me earn your trust by being straightforward with you."}
+    ],
+    rapportQuestions: [
+      {tag:"Comfort Check", text:"What would make this process feel comfortable and easy for you?"},
+      {tag:"Concerns Upfront", text:"Is there anything you're concerned about that I can address upfront, before we get into any details?"}
+    ],
+    partsAB: {
+      ask: "Quick question for you — do you know the difference between Part A and Part B?",
+      note: "Let them answer — a lot of people say no, or they mix them up, and that's completely fine.",
+      explain: "So here's the simple way to think about it: Part A is your hospital insurance — that's what kicks in if you're admitted to the hospital, need skilled nursing care, or hospice. Part B is your medical insurance — that covers your doctor visits, outpatient care, and preventive stuff like screenings and vaccines. Together, A and B are what people call 'Original Medicare.' Make sense so far?"
+    },
+    notCoveredScript: "Now, there's a few things Original Medicare doesn't cover on its own — routine dental, vision, and hearing, plus prescription drugs. That's exactly why plans like the ones we'll go over next exist — to help fill those gaps.",
+    partsCD: "There's also two more parts worth knowing — Part C and Part D. Part C, or Medicare Advantage, is just an alternative way to get your Part A and B — often bundled with Part D too — through a private insurer approved by Medicare. It usually adds extras like dental, vision, and hearing, but it ties you to a network, which is exactly the MAPD or MA plan we'll get into in a bit. Part D is your prescription drug coverage — you can get it as its own standalone plan alongside Original Medicare, or it comes bundled into most Medicare Advantage plans. One thing worth mentioning now: if you go without Part D when you're first eligible and don't have other creditable drug coverage, it can trigger a permanent late-enrollment penalty — so it's worth having in place even if you're not on many medications yet.",
+    part2Branches: [
+      {q:"Will my pre-existing conditions be a problem?", a:"That's a really common worry, and the good news is no — by law, Medicare Parts A, B, Medicare Advantage, and Part D all have to cover you and can't charge you more because of a pre-existing condition. That protection is built in across all four. The one exception is Medicare Supplement outside its guaranteed-issue window, but I'll walk you through that if we get there."},
+      {q:"Can I be denied Medicare because of my health?", a:"You can't, actually — federal law says Medicare can't refuse you coverage based on your health history. Everyone who's eligible gets in, regardless of what conditions they're managing."}
+    ],
+    additionalKnowledge: [
+      {q:"Late enrollment penalties", a:"There are three different penalties depending on what they delayed. One applies only if they don't qualify for premium-free hospital coverage — delaying adds up to 10% to the premium, but only for twice the number of years they delayed (wait 2 years, pay the penalty for 4). Another adds 10% for every full 12-month period they went without their medical coverage, and lasts for as long as they have it — essentially for life. And one for drug coverage kicks in after 63 or more consecutive days without creditable coverage, lasting as long as they have Medicare drug coverage, even if they switch plans. All of these can be waived with credible alternative coverage, like a current employer plan."},
+      {q:"IRMAA (income-related premium adjustment)", a:"Higher-income clients can pay more for Part B and Part D based on their tax return from two years prior. Worth a heads-up if their income is on the higher end, so the premium isn't a surprise."}
+    ],
+    planTypeBridge: "Let's start with the different types of plans out there, so you know exactly what we're comparing before I ask you some questions to help narrow it down.",
+    planTypeOptions: [
+      {name:"MAPD", text:"Most folks I talk to end up in what's called an MAPD — that's Medicare Advantage with prescription drug coverage. By law, it has to cover everything Original Medicare covers, but your out-of-pocket costs can look different — it bundles your medical and drug coverage into one plan, usually with a low or $0 premium, plus extras like dental, vision, and hearing. The trade-off is you're working within that plan's network of doctors.", deepDive:"Since MAPD sounds like the direction for you, let's get specific. I'll pull up the plans available in your area and we'll walk through them side by side — the premium, whether your doctors are in-network, your prescriptions against each plan's formulary, and the extra benefits like dental, vision, and hearing plan by plan. I'll also point out the Maximum Out-of-Pocket limit on each one, since that's your safety net in a bad year — once you hit it, the plan covers 100% for the rest of the year."},
+      {name:"MA", text:"Now, if you're already getting your prescriptions covered somewhere else — say through the VA or a retiree plan — there's also a plain MA plan. Same rule applies — it has to cover everything Original Medicare does, same network trade-off, just without the drug piece, since you wouldn't need it twice.", deepDive:"Since a standalone MA plan fits your situation, we'll go through your area's options the same way — premium, whether your doctors are in-network, and the extra benefits available. Since you're getting drugs covered elsewhere, we don't need to check formularies, but I do want to confirm your other drug coverage counts as creditable, so you're protected from a Part D late-enrollment penalty down the road if that ever changes."},
+      {name:"PDP & Med Supp", text:"If instead you'd rather keep seeing any doctor who takes Medicare, with no network at all, that changes the picture — you'd stay on Original Medicare and add a standalone PDP for your drug coverage, and most people pair that with a Medicare Supplement, which fills in the deductibles and coinsurance gaps Original Medicare leaves behind. Higher monthly premium, but zero network restrictions.", deepDive:"Since we're going the Original Medicare plus Supplement route, this is actually two decisions, so let's take them one at a time. First, we'll pick a Medigap plan letter based on how much out-of-pocket protection you want — Plan G and Plan N are the most common ones people choose right now. Then, separately, we'll shop your specific prescriptions against PDP options in your area to find the best price on your formulary. I'll walk you through both."}
+    ],
+    planTypeWrapup: "So really it comes down to one trade-off: lower cost with a network, through an MAPD or MA plan, or no network at all with Original Medicare, a PDP, and a Supplement. Now that you've got a sense of the options, let's narrow down which one actually fits your situation best.",
+    soaCheckpoint: "Everything up through here has to stay educational — general information about Medicare, not specific plans. Past this point, you can only discuss plan-specific details, premiums, or recommendations if you have a completed Scope of Appointment (SOA) on file for this client.",
+    narrowingQuestions: [
+      {tag:"Payment Style", text:"Now that we've got the SOA squared away, let's narrow this down. When it comes to paying for healthcare, would you rather keep your monthly premium low and expect more cost when you actually use care — or pay a bit more each month to keep your out-of-pocket costs low when something comes up? To make it concrete: how would you feel about a $10 copay every time you see your primary doctor, versus a $500 copay if you ever had an inpatient hospital stay?",
+        signals: [
+          {id:"sig-lowprem", label:"Wants low premium, OK with more exposure", lean:"ma"},
+          {id:"sig-lowoop", label:"Wants low out-of-pocket, OK with higher premium", lean:"medsupp"}
+        ]
+      },
+      {tag:"Provider Access", text:"Next — are you comfortable working within a smaller network of providers, or is it important to you to be able to see any doctor that accepts Medicare, network or not? And a couple related things: do you live somewhere with a lot of provider options nearby, or is it more rural with fewer choices? Do you travel often, or split time between two places, like a lot of snowbirds do?",
+        signals: [
+          {id:"sig-network-ok", label:"Comfortable with a provider network", lean:"ma"},
+          {id:"sig-any-doctor", label:"Wants to see any doctor, no network", lean:"medsupp"},
+          {id:"sig-ppo-hybrid", label:"Wants network flexibility AND a lower premium", lean:"ppo"}
+        ]
+      },
+      {tag:"Other Coverage", text:"Do you have any other health coverage right now — through an employer, a spouse's plan, or something like TRICARE? And are you planning to keep that coverage, or drop it once we get you set up? If you're dropping something, I want to make sure there's no gap between when it ends and your new coverage starts."},
+      {tag:"Extra Benefits", text:"Are there any extra benefits that matter to you — things like dental, vision, hearing, or a gym membership like SilverSneakers or Silver&Fit?",
+        signals: [
+          {id:"sig-perks", label:"Wants extra perks — dental, vision, gym membership", lean:"ma"}
+        ]
+      },
+      {tag:"Previous Coverage", text:"If you've had coverage before, what did you like about it, and what didn't work for you? That tells me a lot about what to avoid this time around."},
+      {tag:"What Else Matters", text:"Last one, and it's a bit open-ended — is there anything else important to you in a health plan that we haven't talked about yet? Some people care about convenience, for example — a Medicare Advantage plan usually means one card for everything, where a Medicare Supplement means carrying separate cards for Medicare, your Supplement, and your drug plan. Others actually prefer that separation since it can mean fewer surprise bills to track. Just want to make sure I'm not missing something that matters to you.",
+        signals: [
+          {id:"sig-onecard", label:"Wants one card / convenience", lean:"ma"},
+          {id:"sig-multicard", label:"OK with multiple cards / fewer surprise bills", lean:"medsupp"}
+        ]
+      }
+    ],
+    planMappingGuide: "Generally: if limiting out-of-pocket cost matters most, even at a higher premium, a Medicare Supplement tends to fit best. If they're comfortable with a network in exchange for a lower premium, a Medicare Advantage plan usually fits — and if they want that lower premium but still want flexibility to go outside the network sometimes, a PPO-style Medicare Advantage plan can bridge that gap. If keeping everything bundled into one plan and one card matters most, that also points toward Medicare Advantage, since it typically combines A, B, and D plus extras — versus Original Medicare or a Supplement, which usually means separate products for drug coverage and things like dental. Ancillary products — dental, vision, hearing, hospital indemnity — can also be layered on top of any of these to round out the coverage.",
+    enrollmentPeriodsReview: {tag:"Enrollment Periods", text:"This is also a good time to check what enrollment periods apply. Look at their Medicare effective date — are they still in their Initial Enrollment Period, or does a Medicare Supplement Open Enrollment period apply? Remind them about the Annual Enrollment Period too, since that's their yearly chance to make a change. And ask if anything's changed recently — a move, losing coverage, anything that might qualify them for a Special Enrollment Period to join, drop, or switch coverage."},
+    part4Branches: [
+      {q:"Is there a cap on what I'll pay out of pocket?", a:"Good question — with a Medicare Advantage plan, yes, there's an annual Maximum Out-of-Pocket limit, or MOOP. Once you hit that number, the plan covers 100% of covered services for the rest of the year. Original Medicare on its own doesn't have that cap, which is exactly why people pair it with a Medigap or Advantage plan."},
+      {q:"Can I have a Medicare Supplement and a Medicare Advantage plan at the same time?", a:"That one trips a lot of people up — those two actually don't combine. Medigap only works alongside Original Medicare, so if you're on a Medicare Advantage plan you can't also carry a Medigap policy, and to buy Medigap in the first place you have to be enrolled in Original Medicare."},
+      {q:"Will my health conditions affect whether I can get a Medicare Supplement, or what I pay for it?", a:"It really comes down to timing. If you're enrolling during your 6-month Medigap Open Enrollment window around your 65th birthday, insurers can't ask you any health questions at all — you're guaranteed acceptance. Outside that window, or if you switch Medigap plans later, medical underwriting applies and acceptance can vary by plan."},
+      {q:"Aren't the Medicare Advantage Open Enrollment Period and General Enrollment Period the same thing?", a:"They share the same dates, January 1 to March 31, so I get why that's confusing — but they're actually different. The General Enrollment Period is for someone signing up for Part B for the first time after missing their Initial Enrollment Period. The Medicare Advantage Open Enrollment Period is for someone already on an Advantage plan who wants to switch or go back to Original Medicare. Worth being precise about which one actually applies to you."},
+      {q:"I have Medicaid — can I still get a Medicare Supplement?", a:"That's actually one combination that's not allowed — by law, a Medicare Supplement can't be sold to someone who has Medicaid. The good news is Medicaid already covers a lot of the same cost-sharing gaps a Supplement would, so you're likely already protected there. Let's look at what fits instead, like a Medicare Advantage plan designed for dual-eligible members."}
+    ],
+    medicareDetailsScript: [
+      {tag:"MBI Number", text:"Awesome, thank you for that. Before we start looking at plans, could you grab your Medicare card for me? It's the red, white, and blue one — I just need the number on it, sometimes called your MBI."},
+      {tag:"Effective Date", text:"Perfect. And while you've got that card handy, what's the effective date listed for Part A and Part B — or if it hasn't started yet, when is it set to kick in?"},
+      {tag:"Extra Help (LIS)", text:"Got it, thank you. One more quick one before we get into plans — do you currently get any Extra Help, sometimes called LIS or a Low Income Subsidy, toward your drug costs? No worries either way, I just want to make sure I'm showing you the plans that actually make sense for you."}
+    ],
+    eligibilityIntro: "Perfect, thank you. And just to make sure I'm pointing you toward the right options — you do have both Part A and Part B active right now, correct? And one more quick one: you're not currently on Medicaid, are you? No worries either way, I just want to make sure whatever we look at next is actually going to work for you.",
+    eligibilityCheck: {
+      title: "Required check — eligibility before you narrow anything down",
+      text: "If they only have one of the two parts, they only qualify for a standalone Part D plan — not Medicare Advantage or a Medicare Supplement. Having both A and B opens up all three options. And it's illegal to sell a Medicare Supplement to someone who has Medicaid, so that combination is always off the table."
+    },
+    eligibilityChecklist: [
+      {id:"elig-parta", label:"Has Part A"},
+      {id:"elig-partb", label:"Has Part B"},
+      {id:"elig-medicaid", label:"Has Medicaid"},
+      {id:"elig-period", label:"Confirmed an enrollment period applies (IEP, AEP, GEP, or SEP)"},
+      {id:"elig-soa", label:"Scope of Appointment (SOA) is signed and on file"}
+    ],
+    part3Branches: [
+      {q:"When was I actually supposed to sign up?", a:"Happy to walk through that — your Initial Enrollment Period is a 7-month window, starting 3 months before your 65th birthday month, including your birthday month, and running 3 months after. That's the window most people use to sign up for Part A, B, and D without a penalty."},
+      {q:"I missed my window — what happens now?", a:"No need to panic — you'd likely be looking at the General Enrollment Period, which runs January 1 to March 31 each year, to sign up for Part B for the first time. That's different from the Medicare Advantage Open Enrollment Period, which shares those same dates but is for people switching Advantage plans, not enrolling for the first time — those two get mixed up a lot. A late enrollment penalty may also apply, but we can look at that together."}
+    ],
+    healthInfoScript: [
+      {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
+      {tag:"Medications", text:"And last one — what prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you fill it. Also, do you have a preferred pharmacy, and would you be open to using a mail-order pharmacy if it saved you money?"}
+    ],
+    agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
+    part5Branches: [
+      {q:"I have diabetes — does Medicare actually cover much of that?", a:"It covers quite a bit, actually. Part B handles your diabetes management — things like blood sugar test strips, glucose monitors, your A1C tests, and even a foot exam every six months if you've got any nerve damage. And on the drug side, Part D covers insulin, with a $35-a-month copay cap on most insulin types these days, so that cost is a lot more predictable than it used to be."},
+      {q:"What about the diabetes prevention or education programs I've heard about?", a:"Those are covered too — Part B pays for an outpatient program that walks you through diet, exercise, monitoring your blood sugar, and managing medication after a diagnosis. If you qualify based on your numbers, there's also nutrition therapy with a dietitian, and a prevention program for anyone at risk who hasn't been diagnosed yet."}
+    ],
+    reference: {
+      parts: [
+        {name:"Part C", title:"Medicare Advantage", desc:"An alternative way to get A and B (often plus D) through a private insurer approved by Medicare. Usually adds extras like dental, vision, and hearing, but ties you to a network. This is the 'MA' / 'MAPD' plan type below."},
+        {name:"Part D", title:"Prescription Drug Coverage", desc:"Covers prescription medications. Sold as a standalone plan alongside Original Medicare, or bundled into most Medicare Advantage plans. Going without it when eligible can trigger a permanent late-enrollment penalty."}
+      ],
+      plans: [
+        {name:"MA", title:"Medicare Advantage (no drug coverage)", desc:"Bundles Part A and B through a private insurer, network-based, often $0 premium. Right fit only for someone getting drug coverage elsewhere — VA benefits, employer plan, etc. — since it does not include Part D."},
+        {name:"MAPD", title:"Medicare Advantage + Prescription Drug", desc:"The most common plan type — bundles medical (A/B), drug coverage (D), and usually extras like dental/vision/hearing into one plan with one card. Lower premiums, but limited to the plan's network of doctors."},
+        {name:"PDP", title:"Prescription Drug Plan (standalone)", desc:"Just Part D — drug coverage only. Pairs with Original Medicare or a Medicare Supplement for someone who wants to keep seeing any doctor but still needs drug coverage. Not used alongside an MA/MAPD plan, since those already include or exclude drug coverage on their own."},
+        {name:"Med Supp", title:"Medicare Supplement (Medigap)", desc:"Works alongside Original Medicare (A/B) to cover the cost-sharing gaps — deductibles, copays, coinsurance. Higher monthly premium, but no network: any doctor who accepts Medicare, nationwide. Does not include drug coverage — needs a standalone Part D (PDP) plan alongside it."}
+      ],
+      networks: [
+        {name:"HMO", title:"Health Maintenance Organization", desc:"Lowest premiums, tightest network. Must use in-network doctors and get a referral from a primary care physician to see a specialist. Best for someone who wants the lowest cost and doesn't mind a gatekeeper."},
+        {name:"EPO", title:"Exclusive Provider Organization", desc:"Similar to an HMO on network — must stay in-network except for emergencies — but usually no referral needed to see a specialist. A middle ground for someone who wants HMO-level pricing without the referral step."},
+        {name:"POS", title:"Point of Service", desc:"A hybrid of HMO and PPO — needs a primary care referral like an HMO, but can also go out-of-network at a higher cost like a PPO. Good fit for someone who wants a primary doctor coordinating care but occasional flexibility."},
+        {name:"PPO", title:"Preferred Provider Organization", desc:"More flexible — no referrals needed, and can see out-of-network doctors at a higher cost. Slightly higher premium than an HMO, but much better fit for someone with multiple specialists or who splits time between areas."},
+        {name:"PFFS", title:"Private Fee-for-Service", desc:"The insurer sets how much it pays and what the member owes; the provider decides visit-by-visit whether to accept those terms. Increasingly rare, so always confirm a provider will accept it before enrolling."},
+        {name:"SNP", title:"Special Needs Plan", desc:"A Medicare Advantage plan tailored to a specific group — people with certain chronic conditions, those who qualify for both Medicare and Medicaid, or those in an institution. Often includes extra benefits and lower costs for people who qualify."}
+      ],
+      networkQuestion: "Most people don't need this level of detail up front — but if they ask what the difference is between these network types, here's the quick breakdown, roughly from most restrictive to least:"
+    },
+    preEnrollmentChecklist: {
+      benefits: [
+        {id:"pre-summary", label:"Reviewed the full Summary of Benefits with them, especially services they routinely use"},
+        {id:"pre-providers", label:"Reviewed the Provider Directory to confirm their doctors are in-network"},
+        {id:"pre-pharmacy", label:"Reviewed the Pharmacy Directory to confirm their pharmacy is in-network"}
+      ],
+      rules: [
+        {id:"pre-currentcoverage", label:"Explained the effect on current coverage (old MA plan ends; TRICARE may be affected; Medigap is likely worth dropping since it'd go unused)"},
+        {id:"pre-partb", label:"Confirmed they understand they must keep paying their Part B premium separately"},
+        {id:"pre-changes", label:"Told them benefits, premiums, and copays can change every January 1"},
+        {id:"pre-outofnetwork", label:"Explained the plan won't cover out-of-network care except in emergencies or urgent situations"},
+        {id:"pre-ppopffs", label:"If PPO/PFFS: explained non-contracted providers can decline treatment and cost more"},
+        {id:"pre-csnp", label:"If C-SNP: confirmed they understand enrollment requires verifying a qualifying chronic condition"},
+        {id:"pre-dsnp", label:"If D-SNP: confirmed they understand enrollment requires verifying dual Medicare and Medicaid eligibility"}
+      ]
+    },
+    strategyNote: {
+      title: "How to work any of these objections",
+      steps: [
+        {tag:"Acknowledge & Validate", text:"Disarm first — \"I completely understand\" — before saying anything else. Lowers tension so they'll actually listen."},
+        {tag:"Pivot Quickly", text:"Move off the objection and toward checking their basic Part A & B eligibility or current setup."},
+        {tag:"Focus on Value", text:"Name a tangible benefit they might be missing — lower prescription copays, dental, vision, OTC allowances."},
+        {tag:"Inquire Gently", text:"If they're happy with their plan, ask how they feel about their deductible or out-of-pocket costs — don't argue, just ask."}
+      ],
+      source: "Action Benefits Blog — \"How health insurance agents can beat 4 objections they'll hear this fall\""
+    },
+    objectionGroups: [
+      {
+        part: 1,
+        section: "Top Sales Objections",
+        items: [
+          {q:"I'm not interested.", a:"I completely understand — I'm not calling to sell you anything today. I just do a quick, free check to see if you're missing out on lower prescription or dental costs you might already qualify for. Can I ask two quick questions to see if that's the case for you?"},
+          {q:"I already have an agent.", a:"That's great — it's good to have someone in your corner. Plans and benefits update every year though, and not every agent proactively re-checks all of them. Mind if I just confirm whether the newest dental, vision, or over-the-counter allowances are already on your plan? Takes two minutes, and if you're already covered, great."},
+          {q:"I've already taken care of my Medicare.", a:"Good — that's exactly where most people should be. Since plans change every year, I just do a quick free review to catch any gaps, like a drug that moved tiers or a new allowance you might now qualify for. Would it hurt to double check?"},
+          {q:"Can you just mail me the information?", a:"I can definitely do that — I just want to make sure I'm not mailing you generic information that doesn't actually apply to you. Can I ask two quick questions first, so whatever I send is specific to your situation instead of a form letter?"},
+          {q:"I'm happy with my current plan (Status Quo).", a:"That's great that you've had consistency — I respect that completely, and I'm not here to talk you out of it. A few ways to open this up, depending on how they respond: <strong>What's Changed reframe</strong> — \"Plans actually reset their benefits every January, so even if you've had the same plan for years, what you're getting today may be different from what you signed up for. We just want to make sure you're still getting full value.\" <strong>Confidence scale</strong> — \"On a scale of 1 to 10, how confident are you that your current plan is the best one available to you right now?\" Most people can't say 10 — that gap opens the door without feeling confrontational. <strong>No-obligation comparison</strong> — \"I'm not here to move you off your plan — I just want to put together a side-by-side so you can see exactly where you stand. If your current plan wins, I'll tell you that. Fair enough?\""},
+          {q:"I want to keep using my doctor / I travel a lot.", a:"That's completely fair, and it's actually one of the first things we check. Let's pull up your doctor and see if they're in-network — and if you travel often, I can show you options that work nationwide instead of a tight local network."},
+          {q:"I have health problems, will I even qualify?", a:"Absolutely, and I hear that worry a lot — by law, Medicare can't deny you coverage or charge you more because of a pre-existing condition, across Part A, B, Advantage, or Part D. That protection is built in. So whatever you're managing, there's a Medicare option that works for you."},
+          {q:"What agency are you with?", a:"I'm an independent broker, which actually works in your favor — I'm not tied to any single company, so I can shop across multiple top-rated carriers to find the plan that truly fits your needs and budget, not just what one company offers. So, what's most important to you when choosing coverage — cost, specific benefits, or network flexibility?"}
+        ]
+      },
+      {
+        part: 1,
+        section: "More Objections (NCC Guide)",
+        items: [
+          {q:"I'm not on Medicare yet.", a:"No problem — a lot of people reach out early. I just want to make sure you know about the penalties for enrolling late once you're eligible. Are you still working right now, and do you have a retirement date in mind?"},
+          {q:"Why are you calling me?", a:"Fair question — I work with people on Medicare in your area, and I have your information from [the card you returned / your online request / your Facebook inquiry]. Can I ask you a couple quick questions?"},
+          {q:"I don't want to make any changes right now.", a:"Completely understand — I'm not talking about a big change here, just seeing if there's a small upgrade that puts a little more money back in your pocket. Can I walk you through what that would look like? If not, would it be alright if I called you back on [date] once I have some new information to share?"},
+          {q:"I can't afford that.", a:"Totally fair — you know your budget better than anyone. Are you currently paying for any other coverage, like a hospital indemnity or supplemental plan? Sometimes we can find savings there that make this a wash instead of an added cost."},
+          {q:"I need to talk to my son/daughter/POA first (Family Gatekeeper).", a:"That's actually really common, and honestly it can make things easier — families who review this together tend to make better decisions. A few ways to work this, depending on the moment: <strong>Inclusion Pivot</strong> — invite them by name into the conversation: \"Your daughter sounds like exactly the kind of person who'd want to see a side-by-side comparison before saying yes or no — let's set that up for her.\" <strong>Pre-Call Information Drop</strong> — before a three-way call, send over something low-stakes and educational, like a one-page comparison, so the call starts warmer and pre-handles the questions they'll likely raise. <strong>Credentialing Bridge</strong> — briefly establish experience with this exact situation first: \"I work with a lot of families where one person handles the research — I'm used to walking through this together, and I'll make sure every question gets answered, not just the ones you think to ask.\""},
+          {q:"I need to talk to my doctor/pharmacist.", a:"Happy to help with that — want me to call your doctor's office or pharmacist together with you right now to confirm they take this coverage? If you'd rather ask them yourself, that's fine too — just keep in mind they usually can't give insurance advice, the same way I can't give medical advice. I'll follow up with you after."},
+          {q:"I don't want to give you that information over the phone.", a:"I get that completely — a lot of people feel that way these days. I only need it to make sure I can actually get you the savings we've been talking about. If you'd rather not share it by phone, I'm happy to meet in person instead, even briefly."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Original Medicare (Part A & B)",
+        items: [
+          {q:"I already have Medicare, I don't need anything else.", a:"Original Medicare alone actually only covers about 80% of costs and doesn't include a cap on what you'd pay out of pocket — that's why most people pair it with either a Medicare Advantage plan or a Supplement, often at little to no added premium. Can I ask what you currently have in place alongside Part A and B?"},
+          {q:"My employer/retiree plan is good enough.", a:"For a lot of people it is, and I'm not here to talk you out of good coverage. I just want to make sure you know what it costs compared to your alternatives, and what happens to that coverage if anything changes with your employer down the road. Worth a quick comparison so you're making an informed choice either way."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Plan Types (Advantage & Supplement)",
+        items: [
+          {q:"I don't want to lose my doctor.", a:"That's the most important question to answer before anything else. Let's pull up your specific doctors and pharmacy and check them against a plan's network before we talk about any other details — if they're not covered, we don't move forward with that plan, simple as that."},
+          {q:"I don't understand the difference between Advantage and Supplement.", a:"Fair — most people don't, and it's the most important decision in this whole process. Advantage plans usually have low or no premium and bundle in extras like dental and vision, but you're limited to a network. Supplements cost more monthly but let you see any doctor who accepts Medicare, nationwide, with very few surprise bills. Let's figure out which trade-off fits how you actually live."},
+          {q:"I'm worried about being locked into a bad plan.", a:"That's a really common concern, and it's worth knowing your options here: Medicare Advantage plans can be changed every Annual Enrollment Period, and there's also an Open Enrollment Period from January 1 to March 31 where you can switch Advantage plans or go back to Original Medicare if something isn't working. You're not stuck."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Enrollment Timing & Cost",
+        items: [
+          {q:"Isn't it too late / too early to enroll?", a:"That depends on your situation — there's the Annual Enrollment Period from October 15 to December 7, but there are also Special Enrollment Periods if you've just moved, lost employer coverage, or qualify for Medicaid. Let's check your specific dates so we know exactly what's open to you right now."},
+          {q:"How much is this going to cost me?", a:"Depends entirely on the plan type and your specific situation — some Advantage plans run $0/month, while Supplements can range higher depending on the plan letter and your area. Let's look at your actual prescriptions and doctors first, then I can give you real numbers instead of a guess."}
+        ]
+      }
+    ]
+  },
+  {
+    id: "medicare_callin",
+    label: "Medicare Call In",
+    tagline: "Inbound call — client contacted you first",
+    desc: "The client called you, not the other way around — so the opener changes, but the compliance requirements don't. Same disclosures, same SOA rules (though the 48-hour wait is waived for a live, beneficiary-initiated call), same education-before-plans structure. Intake here also captures every field your CRM needs up front.",
+    complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We do not offer every plan available in your area. Currently, we represent 0-78 organizations which offer 0-2,613 products in your area. Please contact medicare.gov, 1-800-MEDICARE, or your local State Health Insurance Program (SHIP) to get information on all of your options.",
+    openingIntro: "Thank you for calling [Agency], this is [Name] — I'm a licensed Medicare agent.",
+    nameAsk: {tag:"Full Name", text:"I'd be happy to help you today — let's start by getting you into our system. Can I get your full name? First, middle initial if you have one, and last?"},
+    openingContinued: "Great, thank you, [Prospect Name]. Before we get into whatever brought you in today, let me just grab a few details for our records — it'll only take a minute.",
+    intakeScript: [
+      {tag:"Birthdate", text:"What's your date of birth?", resistance:"Totally understandable! Even just your age range helps me point you in the right direction — are you in your 50s, 60s, or beyond?"},
+      {tag:"Marital Status", text:"And are you currently married, single, widowed, or divorced? Just for our records — no wrong answer here."},
+      {tag:"Contact Info", text:"What's the best phone number and email address to reach you at? And which do you prefer I use going forward — phone or email?", resistance:"No problem! Is there a way you'd prefer to reach back out to me when you're ready? I can give you my direct number instead."},
+      {tag:"Mailing Address", text:"And what's your full mailing address? Street, apartment or unit number if you've got one, city, state, and zip."}
+    ],
+    zipReluctance: [
+      {q:"I don't want to give you my address / zip code.", a:"That's a completely fair concern, and a lot of people feel that way. I just need at least your zip code — carriers and plan options actually vary by location, so without it I can't show you what's actually available where you live. I won't use it for anything else, and you're under no obligation to enroll in anything today. If you'd still rather not share your full address yet, no worries — the zip code alone is enough to get started, and we can fill in the rest once you're more comfortable."}
+    ],
+    callInSoaNote: "Since they called you, not the other way around, the SOA's 48-hour waiting period doesn't apply as long as you're taking this call live right now — you can get the SOA and move into plan-specific discussion in this same call. If you'd missed this call and were calling them back instead, the 48-hour wait would be back in effect.",
+    anchorQuestions: "If you freeze up mid-call, don't panic — fall back on one of these to get the conversation moving again: \"How long have you been on your current plan?\" or \"Are there any doctors or prescriptions you want to make sure stay covered?\" Either one gets them talking and buys you time to find your footing.",
+    discoveryBeforePitch: "Don't skip straight into a benefits pitch, even if they ask directly what's available. Insert two quick discovery questions first: \"Are you currently on Original Medicare, or do you have a supplement?\" and \"Is there anything about your current coverage that's felt like a gap or a frustration?\" This makes the pitch feel tailored instead of canned, especially for a skeptical client.",
+    alreadyHaveMedicareScript: [
+      {tag:"Acknowledge", text:"That's great to hear — a lot of people I talk to already have something in place. I'm not calling to sell you something new necessarily, I just want to make sure what you have is still working for you."},
+      {tag:"Ask What They Have", text:"Can I ask what you currently have — is it Original Medicare on its own, a Medicare Advantage plan, or do you have a Medicare Supplement alongside Original Medicare?"},
+      {tag:"Transition to Review", text:"Got it, thank you. Since plans and networks can change every year even if you don't touch anything, would you mind if I ran a quick, no-obligation comparison to see how your current plan stacks up? If it's still the best fit, I'll tell you that directly — and if there's something better, that's completely your call."}
+    ],
+    trustPhrases: [
+      {situation:"They seem guarded", phrase:"There's no rush — let's just talk through your options."},
+      {situation:"They had a bad experience", phrase:"I'm sorry to hear that. I want this to be a completely different experience for you."},
+      {situation:"They're unsure", phrase:"Great question — let me explain that clearly."},
+      {situation:"They feel pressured", phrase:"My only goal today is to give you information. The decision is 100% yours."},
+      {situation:"They're skeptical", phrase:"I completely understand the skepticism — let me earn your trust by being straightforward with you."}
+    ],
+    rapportQuestions: [
+      {tag:"Comfort Check", text:"What would make this process feel comfortable and easy for you?"},
+      {tag:"Concerns Upfront", text:"Is there anything you're concerned about that I can address upfront, before we get into any details?"}
+    ],
+    partsAB: {
+      ask: "Quick question for you — do you know the difference between Part A and Part B?",
+      note: "Let them answer — a lot of people say no, or they mix them up, and that's completely fine.",
+      explain: "So here's the simple way to think about it: Part A is your hospital insurance — that's what kicks in if you're admitted to the hospital, need skilled nursing care, or hospice. Part B is your medical insurance — that covers your doctor visits, outpatient care, and preventive stuff like screenings and vaccines. Together, A and B are what people call 'Original Medicare.' Make sense so far?"
+    },
+    notCoveredScript: "Now, there's a few things Original Medicare doesn't cover on its own — routine dental, vision, and hearing, plus prescription drugs. That's exactly why plans like the ones we'll go over next exist — to help fill those gaps.",
+    partsCD: "There's also two more parts worth knowing — Part C and Part D. Part C, or Medicare Advantage, is just an alternative way to get your Part A and B — often bundled with Part D too — through a private insurer approved by Medicare. It usually adds extras like dental, vision, and hearing, but it ties you to a network, which is exactly the MAPD or MA plan we'll get into in a bit. Part D is your prescription drug coverage — you can get it as its own standalone plan alongside Original Medicare, or it comes bundled into most Medicare Advantage plans. One thing worth mentioning now: if you go without Part D when you're first eligible and don't have other creditable drug coverage, it can trigger a permanent late-enrollment penalty — so it's worth having in place even if you're not on many medications yet.",
+    part2Branches: [
+      {q:"Will my pre-existing conditions be a problem?", a:"That's a really common worry, and the good news is no — by law, Medicare Parts A, B, Medicare Advantage, and Part D all have to cover you and can't charge you more because of a pre-existing condition. That protection is built in across all four. The one exception is Medicare Supplement outside its guaranteed-issue window, but I'll walk you through that if we get there."},
+      {q:"Can I be denied Medicare because of my health?", a:"You can't, actually — federal law says Medicare can't refuse you coverage based on your health history. Everyone who's eligible gets in, regardless of what conditions they're managing."}
+    ],
+    additionalKnowledge: [
+      {q:"Late enrollment penalties", a:"There are three different penalties depending on what they delayed. One applies only if they don't qualify for premium-free hospital coverage — delaying adds up to 10% to the premium, but only for twice the number of years they delayed (wait 2 years, pay the penalty for 4). Another adds 10% for every full 12-month period they went without their medical coverage, and lasts for as long as they have it — essentially for life. And one for drug coverage kicks in after 63 or more consecutive days without creditable coverage, lasting as long as they have Medicare drug coverage, even if they switch plans. All of these can be waived with credible alternative coverage, like a current employer plan."},
+      {q:"IRMAA (income-related premium adjustment)", a:"Higher-income clients can pay more for Part B and Part D based on their tax return from two years prior. Worth a heads-up if their income is on the higher end, so the premium isn't a surprise."}
+    ],
+    planTypeBridge: "Let's start with the different types of plans out there, so you know exactly what we're comparing before I ask you some questions to help narrow it down.",
+    planTypeOptions: [
+      {name:"MAPD", text:"Most folks I talk to end up in what's called an MAPD — that's Medicare Advantage with prescription drug coverage. By law, it has to cover everything Original Medicare covers, but your out-of-pocket costs can look different — it bundles your medical and drug coverage into one plan, usually with a low or $0 premium, plus extras like dental, vision, and hearing. The trade-off is you're working within that plan's network of doctors.", deepDive:"Since MAPD sounds like the direction for you, let's get specific. I'll pull up the plans available in your area and we'll walk through them side by side — the premium, whether your doctors are in-network, your prescriptions against each plan's formulary, and the extra benefits like dental, vision, and hearing plan by plan. I'll also point out the Maximum Out-of-Pocket limit on each one, since that's your safety net in a bad year — once you hit it, the plan covers 100% for the rest of the year."},
+      {name:"MA", text:"Now, if you're already getting your prescriptions covered somewhere else — say through the VA or a retiree plan — there's also a plain MA plan. Same rule applies — it has to cover everything Original Medicare does, same network trade-off, just without the drug piece, since you wouldn't need it twice.", deepDive:"Since a standalone MA plan fits your situation, we'll go through your area's options the same way — premium, whether your doctors are in-network, and the extra benefits available. Since you're getting drugs covered elsewhere, we don't need to check formularies, but I do want to confirm your other drug coverage counts as creditable, so you're protected from a Part D late-enrollment penalty down the road if that ever changes."},
+      {name:"PDP & Med Supp", text:"If instead you'd rather keep seeing any doctor who takes Medicare, with no network at all, that changes the picture — you'd stay on Original Medicare and add a standalone PDP for your drug coverage, and most people pair that with a Medicare Supplement, which fills in the deductibles and coinsurance gaps Original Medicare leaves behind. Higher monthly premium, but zero network restrictions.", deepDive:"Since we're going the Original Medicare plus Supplement route, this is actually two decisions, so let's take them one at a time. First, we'll pick a Medigap plan letter based on how much out-of-pocket protection you want — Plan G and Plan N are the most common ones people choose right now. Then, separately, we'll shop your specific prescriptions against PDP options in your area to find the best price on your formulary. I'll walk you through both."}
+    ],
+    planTypeWrapup: "So really it comes down to one trade-off: lower cost with a network, through an MAPD or MA plan, or no network at all with Original Medicare, a PDP, and a Supplement. Now that you've got a sense of the options, let's narrow down which one actually fits your situation best.",
+    soaCheckpoint: "Everything up through here has to stay educational — general information about Medicare, not specific plans. Past this point, you can only discuss plan-specific details, premiums, or recommendations if you have a completed Scope of Appointment (SOA) on file for this client.",
+    narrowingQuestions: [
+      {tag:"Payment Style", text:"Now that we've got the SOA squared away, let's narrow this down. When it comes to paying for healthcare, would you rather keep your monthly premium low and expect more cost when you actually use care — or pay a bit more each month to keep your out-of-pocket costs low when something comes up? To make it concrete: how would you feel about a $10 copay every time you see your primary doctor, versus a $500 copay if you ever had an inpatient hospital stay?",
+        signals: [
+          {id:"sig-lowprem", label:"Wants low premium, OK with more exposure", lean:"ma"},
+          {id:"sig-lowoop", label:"Wants low out-of-pocket, OK with higher premium", lean:"medsupp"}
+        ]
+      },
+      {tag:"Provider Access", text:"Next — are you comfortable working within a smaller network of providers, or is it important to you to be able to see any doctor that accepts Medicare, network or not? And a couple related things: do you live somewhere with a lot of provider options nearby, or is it more rural with fewer choices? Do you travel often, or split time between two places, like a lot of snowbirds do?",
+        signals: [
+          {id:"sig-network-ok", label:"Comfortable with a provider network", lean:"ma"},
+          {id:"sig-any-doctor", label:"Wants to see any doctor, no network", lean:"medsupp"},
+          {id:"sig-ppo-hybrid", label:"Wants network flexibility AND a lower premium", lean:"ppo"}
+        ]
+      },
+      {tag:"Other Coverage", text:"Do you have any other health coverage right now — through an employer, a spouse's plan, or something like TRICARE? And are you planning to keep that coverage, or drop it once we get you set up? If you're dropping something, I want to make sure there's no gap between when it ends and your new coverage starts."},
+      {tag:"Extra Benefits", text:"Are there any extra benefits that matter to you — things like dental, vision, hearing, or a gym membership like SilverSneakers or Silver&Fit?",
+        signals: [
+          {id:"sig-perks", label:"Wants extra perks — dental, vision, gym membership", lean:"ma"}
+        ]
+      },
+      {tag:"Previous Coverage", text:"If you've had coverage before, what did you like about it, and what didn't work for you? That tells me a lot about what to avoid this time around."},
+      {tag:"What Else Matters", text:"Last one, and it's a bit open-ended — is there anything else important to you in a health plan that we haven't talked about yet? Some people care about convenience, for example — a Medicare Advantage plan usually means one card for everything, where a Medicare Supplement means carrying separate cards for Medicare, your Supplement, and your drug plan. Others actually prefer that separation since it can mean fewer surprise bills to track. Just want to make sure I'm not missing something that matters to you.",
+        signals: [
+          {id:"sig-onecard", label:"Wants one card / convenience", lean:"ma"},
+          {id:"sig-multicard", label:"OK with multiple cards / fewer surprise bills", lean:"medsupp"}
+        ]
+      }
+    ],
+    planMappingGuide: "Generally: if limiting out-of-pocket cost matters most, even at a higher premium, a Medicare Supplement tends to fit best. If they're comfortable with a network in exchange for a lower premium, a Medicare Advantage plan usually fits — and if they want that lower premium but still want flexibility to go outside the network sometimes, a PPO-style Medicare Advantage plan can bridge that gap. If keeping everything bundled into one plan and one card matters most, that also points toward Medicare Advantage, since it typically combines A, B, and D plus extras — versus Original Medicare or a Supplement, which usually means separate products for drug coverage and things like dental. Ancillary products — dental, vision, hearing, hospital indemnity — can also be layered on top of any of these to round out the coverage.",
+    enrollmentPeriodsReview: {tag:"Enrollment Periods", text:"This is also a good time to check what enrollment periods apply. Look at their Medicare effective date — are they still in their Initial Enrollment Period, or does a Medicare Supplement Open Enrollment period apply? Remind them about the Annual Enrollment Period too, since that's their yearly chance to make a change. And ask if anything's changed recently — a move, losing coverage, anything that might qualify them for a Special Enrollment Period to join, drop, or switch coverage."},
+    part4Branches: [
+      {q:"Is there a cap on what I'll pay out of pocket?", a:"Good question — with a Medicare Advantage plan, yes, there's an annual Maximum Out-of-Pocket limit, or MOOP. Once you hit that number, the plan covers 100% of covered services for the rest of the year. Original Medicare on its own doesn't have that cap, which is exactly why people pair it with a Medigap or Advantage plan."},
+      {q:"Can I have a Medicare Supplement and a Medicare Advantage plan at the same time?", a:"That one trips a lot of people up — those two actually don't combine. Medigap only works alongside Original Medicare, so if you're on a Medicare Advantage plan you can't also carry a Medigap policy, and to buy Medigap in the first place you have to be enrolled in Original Medicare."},
+      {q:"Will my health conditions affect whether I can get a Medicare Supplement, or what I pay for it?", a:"It really comes down to timing. If you're enrolling during your 6-month Medigap Open Enrollment window around your 65th birthday, insurers can't ask you any health questions at all — you're guaranteed acceptance. Outside that window, or if you switch Medigap plans later, medical underwriting applies and acceptance can vary by plan."},
+      {q:"Aren't the Medicare Advantage Open Enrollment Period and General Enrollment Period the same thing?", a:"They share the same dates, January 1 to March 31, so I get why that's confusing — but they're actually different. The General Enrollment Period is for someone signing up for Part B for the first time after missing their Initial Enrollment Period. The Medicare Advantage Open Enrollment Period is for someone already on an Advantage plan who wants to switch or go back to Original Medicare. Worth being precise about which one actually applies to you."},
+      {q:"I have Medicaid — can I still get a Medicare Supplement?", a:"That's actually one combination that's not allowed — by law, a Medicare Supplement can't be sold to someone who has Medicaid. The good news is Medicaid already covers a lot of the same cost-sharing gaps a Supplement would, so you're likely already protected there. Let's look at what fits instead, like a Medicare Advantage plan designed for dual-eligible members."}
+    ],
+    medicareDetailsScript: [
+      {tag:"MBI Number", text:"Now, do you have your Medicare card handy? It's the red, white, and blue one — I just need the number on it, sometimes called your MBI."},
+      {tag:"Part A Effective Date", text:"Great. And what's the effective date listed for Part A on that card?"},
+      {tag:"Part B Effective Date", text:"And the effective date for Part B — is that the same date, or a different one?"},
+      {tag:"Medicaid", text:"Are you currently enrolled in Medicaid?"},
+      {tag:"Extra Help (LIS)", text:"And last one — do you currently receive Extra Help, sometimes called LIS or a Low Income Subsidy, toward your prescription costs?"}
+    ],
+    eligibilityIntro: "Perfect, thank you for all of that. Let me just double-check a couple of things on my end before we go any further, based on what you've told me.",
+    eligibilityCheck: {
+      title: "Required check — eligibility before you narrow anything down",
+      text: "If they only have one of the two parts, they only qualify for a standalone Part D plan — not Medicare Advantage or a Medicare Supplement. Having both A and B opens up all three options. And it's illegal to sell a Medicare Supplement to someone who has Medicaid, so that combination is always off the table."
+    },
+    eligibilityChecklist: [
+      {id:"elig-parta", label:"Has Part A"},
+      {id:"elig-partb", label:"Has Part B"},
+      {id:"elig-medicaid", label:"Has Medicaid"},
+      {id:"elig-period", label:"Confirmed an enrollment period applies (IEP, AEP, GEP, or SEP)"},
+      {id:"elig-soa", label:"Scope of Appointment (SOA) is signed and on file"}
+    ],
+    part3Branches: [
+      {q:"When was I actually supposed to sign up?", a:"Happy to walk through that — your Initial Enrollment Period is a 7-month window, starting 3 months before your 65th birthday month, including your birthday month, and running 3 months after. That's the window most people use to sign up for Part A, B, and D without a penalty."},
+      {q:"I missed my window — what happens now?", a:"No need to panic — you'd likely be looking at the General Enrollment Period, which runs January 1 to March 31 each year, to sign up for Part B for the first time. That's different from the Medicare Advantage Open Enrollment Period, which shares those same dates but is for people switching Advantage plans, not enrolling for the first time — those two get mixed up a lot. A late enrollment penalty may also apply, but we can look at that together."}
+    ],
+    healthInfoScript: [
+      {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
+      {tag:"Medications", text:"And last one — what prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you fill it. Also, do you have a preferred pharmacy, and would you be open to using a mail-order pharmacy if it saved you money?"}
+    ],
+    agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
+    part5Branches: [
+      {q:"I have diabetes — does Medicare actually cover much of that?", a:"It covers quite a bit, actually. Part B handles your diabetes management — things like blood sugar test strips, glucose monitors, your A1C tests, and even a foot exam every six months if you've got any nerve damage. And on the drug side, Part D covers insulin, with a $35-a-month copay cap on most insulin types these days, so that cost is a lot more predictable than it used to be."},
+      {q:"What about the diabetes prevention or education programs I've heard about?", a:"Those are covered too — Part B pays for an outpatient program that walks you through diet, exercise, monitoring your blood sugar, and managing medication after a diagnosis. If you qualify based on your numbers, there's also nutrition therapy with a dietitian, and a prevention program for anyone at risk who hasn't been diagnosed yet."}
+    ],
+    reference: {
+      parts: [
+        {name:"Part C", title:"Medicare Advantage", desc:"An alternative way to get A and B (often plus D) through a private insurer approved by Medicare. Usually adds extras like dental, vision, and hearing, but ties you to a network. This is the 'MA' / 'MAPD' plan type below."},
+        {name:"Part D", title:"Prescription Drug Coverage", desc:"Covers prescription medications. Sold as a standalone plan alongside Original Medicare, or bundled into most Medicare Advantage plans. Going without it when eligible can trigger a permanent late-enrollment penalty."}
+      ],
+      plans: [
+        {name:"MA", title:"Medicare Advantage (no drug coverage)", desc:"Bundles Part A and B through a private insurer, network-based, often $0 premium. Right fit only for someone getting drug coverage elsewhere — VA benefits, employer plan, etc. — since it does not include Part D."},
+        {name:"MAPD", title:"Medicare Advantage + Prescription Drug", desc:"The most common plan type — bundles medical (A/B), drug coverage (D), and usually extras like dental/vision/hearing into one plan with one card. Lower premiums, but limited to the plan's network of doctors."},
+        {name:"PDP", title:"Prescription Drug Plan (standalone)", desc:"Just Part D — drug coverage only. Pairs with Original Medicare or a Medicare Supplement for someone who wants to keep seeing any doctor but still needs drug coverage. Not used alongside an MA/MAPD plan, since those already include or exclude drug coverage on their own."},
+        {name:"Med Supp", title:"Medicare Supplement (Medigap)", desc:"Works alongside Original Medicare (A/B) to cover the cost-sharing gaps — deductibles, copays, coinsurance. Higher monthly premium, but no network: any doctor who accepts Medicare, nationwide. Does not include drug coverage — needs a standalone Part D (PDP) plan alongside it."}
+      ],
+      networks: [
+        {name:"HMO", title:"Health Maintenance Organization", desc:"Lowest premiums, tightest network. Must use in-network doctors and get a referral from a primary care physician to see a specialist. Best for someone who wants the lowest cost and doesn't mind a gatekeeper."},
+        {name:"EPO", title:"Exclusive Provider Organization", desc:"Similar to an HMO on network — must stay in-network except for emergencies — but usually no referral needed to see a specialist. A middle ground for someone who wants HMO-level pricing without the referral step."},
+        {name:"POS", title:"Point of Service", desc:"A hybrid of HMO and PPO — needs a primary care referral like an HMO, but can also go out-of-network at a higher cost like a PPO. Good fit for someone who wants a primary doctor coordinating care but occasional flexibility."},
+        {name:"PPO", title:"Preferred Provider Organization", desc:"More flexible — no referrals needed, and can see out-of-network doctors at a higher cost. Slightly higher premium than an HMO, but much better fit for someone with multiple specialists or who splits time between areas."},
+        {name:"PFFS", title:"Private Fee-for-Service", desc:"The insurer sets how much it pays and what the member owes; the provider decides visit-by-visit whether to accept those terms. Increasingly rare, so always confirm a provider will accept it before enrolling."},
+        {name:"SNP", title:"Special Needs Plan", desc:"A Medicare Advantage plan tailored to a specific group — people with certain chronic conditions, those who qualify for both Medicare and Medicaid, or those in an institution. Often includes extra benefits and lower costs for people who qualify."}
+      ],
+      networkQuestion: "Most people don't need this level of detail up front — but if they ask what the difference is between these network types, here's the quick breakdown, roughly from most restrictive to least:"
+    },
+    preEnrollmentChecklist: {
+      benefits: [
+        {id:"pre2-summary", label:"Reviewed the full Summary of Benefits with them, especially services they routinely use"},
+        {id:"pre2-providers", label:"Reviewed the Provider Directory to confirm their doctors are in-network"},
+        {id:"pre2-pharmacy", label:"Reviewed the Pharmacy Directory to confirm their pharmacy is in-network"}
+      ],
+      rules: [
+        {id:"pre2-currentcoverage", label:"Explained the effect on current coverage (old MA plan ends; TRICARE may be affected; Medigap is likely worth dropping since it'd go unused)"},
+        {id:"pre2-partb", label:"Confirmed they understand they must keep paying their Part B premium separately"},
+        {id:"pre2-changes", label:"Told them benefits, premiums, and copays can change every January 1"},
+        {id:"pre2-outofnetwork", label:"Explained the plan won't cover out-of-network care except in emergencies or urgent situations"},
+        {id:"pre2-ppopffs", label:"If PPO/PFFS: explained non-contracted providers can decline treatment and cost more"},
+        {id:"pre2-csnp", label:"If C-SNP: confirmed they understand enrollment requires verifying a qualifying chronic condition"},
+        {id:"pre2-dsnp", label:"If D-SNP: confirmed they understand enrollment requires verifying dual Medicare and Medicaid eligibility"}
+      ]
+    },
+    strategyNote: {
+      title: "How to work any of these objections",
+      steps: [
+        {tag:"Acknowledge & Validate", text:"Disarm first — \"I completely understand\" — before saying anything else. Lowers tension so they'll actually listen."},
+        {tag:"Pivot Quickly", text:"Move off the objection and toward checking their basic Part A & B eligibility or current setup."},
+        {tag:"Focus on Value", text:"Name a tangible benefit they might be missing — lower prescription copays, dental, vision, OTC allowances."},
+        {tag:"Inquire Gently", text:"If they're happy with their plan, ask how they feel about their deductible or out-of-pocket costs — don't argue, just ask."}
+      ],
+      source: "Action Benefits Blog — \"How health insurance agents can beat 4 objections they'll hear this fall\""
+    },
+    objectionGroups: [
+      {
+        part: 1,
+        section: "Top Sales Objections",
+        items: [
+          {q:"I'm not interested.", a:"I completely understand — I'm not calling to sell you anything today. I just do a quick, free check to see if you're missing out on lower prescription or dental costs you might already qualify for. Can I ask two quick questions to see if that's the case for you?"},
+          {q:"I already have an agent.", a:"That's great — it's good to have someone in your corner. Plans and benefits update every year though, and not every agent proactively re-checks all of them. Mind if I just confirm whether the newest dental, vision, or over-the-counter allowances are already on your plan? Takes two minutes, and if you're already covered, great."},
+          {q:"I've already taken care of my Medicare.", a:"Good — that's exactly where most people should be. Since plans change every year, I just do a quick free review to catch any gaps, like a drug that moved tiers or a new allowance you might now qualify for. Would it hurt to double check?"},
+          {q:"Can you just mail me the information?", a:"I can definitely do that — I just want to make sure I'm not mailing you generic information that doesn't actually apply to you. Can I ask two quick questions first, so whatever I send is specific to your situation instead of a form letter?"},
+          {q:"I'm happy with my current plan (Status Quo).", a:"That's great that you've had consistency — I respect that completely, and I'm not here to talk you out of it. A few ways to open this up, depending on how they respond: <strong>What's Changed reframe</strong> — \"Plans actually reset their benefits every January, so even if you've had the same plan for years, what you're getting today may be different from what you signed up for. We just want to make sure you're still getting full value.\" <strong>Confidence scale</strong> — \"On a scale of 1 to 10, how confident are you that your current plan is the best one available to you right now?\" Most people can't say 10 — that gap opens the door without feeling confrontational. <strong>No-obligation comparison</strong> — \"I'm not here to move you off your plan — I just want to put together a side-by-side so you can see exactly where you stand. If your current plan wins, I'll tell you that. Fair enough?\""},
+          {q:"I want to keep using my doctor / I travel a lot.", a:"That's completely fair, and it's actually one of the first things we check. Let's pull up your doctor and see if they're in-network — and if you travel often, I can show you options that work nationwide instead of a tight local network."},
+          {q:"I have health problems, will I even qualify?", a:"Absolutely, and I hear that worry a lot — by law, Medicare can't deny you coverage or charge you more because of a pre-existing condition, across Part A, B, Advantage, or Part D. That protection is built in. So whatever you're managing, there's a Medicare option that works for you."},
+          {q:"What agency are you with?", a:"I'm an independent broker, which actually works in your favor — I'm not tied to any single company, so I can shop across multiple top-rated carriers to find the plan that truly fits your needs and budget, not just what one company offers. So, what's most important to you when choosing coverage — cost, specific benefits, or network flexibility?"}
+        ]
+      },
+      {
+        part: 1,
+        section: "More Objections (NCC Guide)",
+        items: [
+          {q:"I'm not on Medicare yet.", a:"No problem — a lot of people reach out early. I just want to make sure you know about the penalties for enrolling late once you're eligible. Are you still working right now, and do you have a retirement date in mind?"},
+          {q:"Why are you calling me?", a:"Fair question — I work with people on Medicare in your area, and I have your information from [the card you returned / your online request / your Facebook inquiry]. Can I ask you a couple quick questions?"},
+          {q:"I don't want to make any changes right now.", a:"Completely understand — I'm not talking about a big change here, just seeing if there's a small upgrade that puts a little more money back in your pocket. Can I walk you through what that would look like? If not, would it be alright if I called you back on [date] once I have some new information to share?"},
+          {q:"I can't afford that.", a:"Totally fair — you know your budget better than anyone. Are you currently paying for any other coverage, like a hospital indemnity or supplemental plan? Sometimes we can find savings there that make this a wash instead of an added cost."},
+          {q:"I need to talk to my son/daughter/POA first (Family Gatekeeper).", a:"That's actually really common, and honestly it can make things easier — families who review this together tend to make better decisions. A few ways to work this, depending on the moment: <strong>Inclusion Pivot</strong> — invite them by name into the conversation: \"Your daughter sounds like exactly the kind of person who'd want to see a side-by-side comparison before saying yes or no — let's set that up for her.\" <strong>Pre-Call Information Drop</strong> — before a three-way call, send over something low-stakes and educational, like a one-page comparison, so the call starts warmer and pre-handles the questions they'll likely raise. <strong>Credentialing Bridge</strong> — briefly establish experience with this exact situation first: \"I work with a lot of families where one person handles the research — I'm used to walking through this together, and I'll make sure every question gets answered, not just the ones you think to ask.\""},
+          {q:"I need to talk to my doctor/pharmacist.", a:"Happy to help with that — want me to call your doctor's office or pharmacist together with you right now to confirm they take this coverage? If you'd rather ask them yourself, that's fine too — just keep in mind they usually can't give insurance advice, the same way I can't give medical advice. I'll follow up with you after."},
+          {q:"I don't want to give you that information over the phone.", a:"I get that completely — a lot of people feel that way these days. I only need it to make sure I can actually get you the savings we've been talking about. If you'd rather not share it by phone, I'm happy to meet in person instead, even briefly."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Original Medicare (Part A & B)",
+        items: [
+          {q:"I already have Medicare, I don't need anything else.", a:"Original Medicare alone actually only covers about 80% of costs and doesn't include a cap on what you'd pay out of pocket — that's why most people pair it with either a Medicare Advantage plan or a Supplement, often at little to no added premium. Can I ask what you currently have in place alongside Part A and B?"},
+          {q:"My employer/retiree plan is good enough.", a:"For a lot of people it is, and I'm not here to talk you out of good coverage. I just want to make sure you know what it costs compared to your alternatives, and what happens to that coverage if anything changes with your employer down the road. Worth a quick comparison so you're making an informed choice either way."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Plan Types (Advantage & Supplement)",
+        items: [
+          {q:"I don't want to lose my doctor.", a:"That's the most important question to answer before anything else. Let's pull up your specific doctors and pharmacy and check them against a plan's network before we talk about any other details — if they're not covered, we don't move forward with that plan, simple as that."},
+          {q:"I don't understand the difference between Advantage and Supplement.", a:"Fair — most people don't, and it's the most important decision in this whole process. Advantage plans usually have low or no premium and bundle in extras like dental and vision, but you're limited to a network. Supplements cost more monthly but let you see any doctor who accepts Medicare, nationwide, with very few surprise bills. Let's figure out which trade-off fits how you actually live."},
+          {q:"I'm worried about being locked into a bad plan.", a:"That's a really common concern, and it's worth knowing your options here: Medicare Advantage plans can be changed every Annual Enrollment Period, and there's also an Open Enrollment Period from January 1 to March 31 where you can switch Advantage plans or go back to Original Medicare if something isn't working. You're not stuck."}
+        ]
+      },
+      {
+        part: 1,
+        section: "Objections — Enrollment Timing & Cost",
+        items: [
+          {q:"Isn't it too late / too early to enroll?", a:"That depends on your situation — there's the Annual Enrollment Period from October 15 to December 7, but there are also Special Enrollment Periods if you've just moved, lost employer coverage, or qualify for Medicaid. Let's check your specific dates so we know exactly what's open to you right now."},
+          {q:"How much is this going to cost me?", a:"Depends entirely on the plan type and your specific situation — some Advantage plans run $0/month, while Supplements can range higher depending on the plan letter and your area. Let's look at your actual prescriptions and doctors first, then I can give you real numbers instead of a guess."}
+        ]
+      }
+    ]
+  },
+  {
+    id: "followup",
+    label: "Medicare Follow-Up",
+    tagline: "Post-enrollment check-ins",
+    type: "followup",
+    desc: "Compliant follow-up cadence after enrollment. The rule that matters most: check on satisfaction, but never initiate a conversation about OEP, SEP, or switching plans — only respond if the client brings it up first.",
+    recordingDisclosure: "This call may be recorded for quality assurance or training purposes.",
+    cadence: [
+      {tag:"Day 3", intro:"Hi [Name], this is [Name] with [Agency] —", continued:"just following up a few days after your enrollment. I wanted to say thank you again for trusting me with this, and see if anything's come up already. Any questions before you've had a chance to use the plan yet?"},
+      {tag:"Day 30", intro:"Hi [Name], it's [Name] again —", continued:"it's been about a month since your plan started. Have you had a chance to use it yet, like a doctor visit or filling a prescription? I just want to make sure everything's working the way we talked about."},
+      {tag:"Day 60", intro:"Hi [Name], just checking in —", continued:"I wanted to remind you about a couple of benefits on your plan people sometimes forget about, like the nurse line or a fitness program like SilverSneakers or Silver&Fit. Have you had a chance to use any of those?"},
+      {tag:"Day 90", intro:"Hi [Name], quick check-in at the 90-day mark —", continued:"is everything still going well? Just a reminder, you can reach out to me anytime with questions. I'm always here if you need anything."}
+    ],
+    complianceNote: "You can always ask a client how they're doing and whether they're satisfied. What you cannot do is bring up the Open Enrollment Period, a Special Enrollment Period, or the idea of switching plans on your own. That conversation only starts if the client expresses dissatisfaction first — you're responding, not initiating.",
+    triggerPhrases: [
+      {q:"I don't really like this HMO plan I chose. Am I allowed to pick a different plan?", a:"Yes — since you brought that up, let's look at your options. Depending on the timing, you may qualify for the Medicare Advantage Open Enrollment Period (January 1–March 31) or a Special Enrollment Period. Let's go over what's actually available to you right now."},
+      {q:"Do I have to keep this plan until the next Annual Enrollment Period?", a:"Not necessarily — since you're asking, let's check what enrollment periods you might qualify for right now based on your situation."},
+      {q:"Can you please tell me about the other plans in my area?", a:"Sure, happy to walk through your options. Since you're the one asking, let's see what enrollment period applies to you and go from there."},
+      {q:"My doctors are no longer in the provider network.", a:"That's important to know — a network change like that can qualify you for a Special Enrollment Period. Let's check your eligibility and look at plans where your doctors are actually covered."}
+    ]
+  }
+];
+
+let activeCategory = DATA[0].id;
+let searchTerm = "";
+let checklistState = {};
+
+function countBadge(cat){
+  if(cat.type === 'framework') return '3-Q';
+  if(cat.type === 'followup') return '4-day';
+  if(cat.objectionGroups) return cat.objectionGroups.reduce((sum,g)=>sum+g.items.length,0);
+  return cat.objections.length;
+}
+
+function renderTabs(){
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = DATA.map(cat => `
+    <button class="tab-btn ${cat.id===activeCategory?'active':''}" data-id="${cat.id}">
+      ${cat.label} <span class="count">${countBadge(cat)}</span>
+    </button>
+  `).join('');
+  tabs.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      activeCategory = btn.dataset.id;
+      renderTabs();
+      renderMain();
+    });
+  });
+}
+
+function matchesSearch(obj){
+  if(!searchTerm) return true;
+  const t = searchTerm.toLowerCase();
+  return obj.q.toLowerCase().includes(t) || obj.a.toLowerCase().includes(t);
+}
+
+function renderResistanceNote(text){
+  if(!text) return '';
+  return `
+    <div class="resistance-note">
+      <span class="resistance-icon">↪</span>
+      <div>
+        <span class="resistance-label">If they resist</span>
+        <p>${text}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrustPhrases(items){
+  if(!items || items.length === 0) return '';
+  return `
+    <p class="section-label">Universal trust-building phrases</p>
+    <div class="trust-phrases">
+      ${items.map(t => `
+        <div class="trust-phrases-row">
+          <span class="situation">${t.situation}</span>
+          <span class="phrase">"${t.phrase}"</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderQuickJump(cat, skip){
+  const allItems = cat.objectionGroups.flatMap(g => g.items);
+  if(allItems.length === 0) return '';
+  return `
+    <div class="quick-jump">
+      <div class="quick-jump-label">Jump straight to an objection (${allItems.length})</div>
+      <div class="quick-jump-list">
+        ${allItems.map(o => `<button class="quick-jump-chip" data-target="obj-${slugify(o.q)}">${o.q}</button>`).join('')}
+      </div>
+      ${skip ? `<button class="jump-link" id="${skip.id}">${skip.label}</button>` : ''}
+    </div>
+  `;
+}
+
+function renderBranchQuickJump(items){
+  if(!items || items.length === 0) return '';
+  return `
+    <div class="quick-jump branch-jump">
+      <div class="quick-jump-label">🌱 Jump to a question they might ask (${items.length})</div>
+      <div class="quick-jump-list">
+        ${items.map(o => `<button class="quick-jump-chip branch-chip" data-target="obj-${slugify(o.q)}">${o.q}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderMain(){
+  const main = document.getElementById('main');
+  const cat = DATA.find(c=>c.id===activeCategory);
+
+  let html = `
+    <div class="category-head">
+      <h2>${cat.label}</h2>
+      <span class="category-tagline">${cat.tagline}</span>
+    </div>
+    <p class="category-desc">${cat.desc}</p>
+  `;
+
+  if(cat.objectionGroups){
+    const groupsFor = (n) => cat.objectionGroups.filter(g => g.part === n);
+
+    // Part 1 — Start of script, quick-jump index, then its own objections
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">1</div><div class="part-title">Start of Script</div></div>
+        ${renderVoicemailButton(cat.voicemailScript)}
+        ${cat.openingIntro ? `<div class="opening"><p>${cat.openingIntro}</p></div>` : ''}
+        ${cat.complianceDisclosure ? `
+        <div class="compliance">
+          <div class="compliance-label">Required disclosure — read word-for-word next</div>
+          <p>${cat.complianceDisclosure}</p>
+          <div class="compliance-note">Flows directly out of the intro line above, before continuing the pitch — per CMS marketing guidelines.</div>
+        </div>
+        ` : ''}
+        ${cat.nameAsk ? `
+        <div class="script-flow">
+          <div class="script-chunk">
+            <div class="script-chunk-tag">${cat.nameAsk.tag}</div>
+            <div><p class="script-chunk-text">${cat.nameAsk.text}</p></div>
+          </div>
+        </div>
+        ` : ''}
+        ${cat.openingContinued ? `<div class="opening"><p>${cat.openingContinued}</p></div>` : ''}
+        ${cat.opening ? `<div class="opening"><p>${cat.opening}</p></div>` : ''}
+        ${renderAlreadyHaveButton(cat.alreadyHaveMedicareScript)}
+        ${cat.rapportQuestions ? `
+        <p class="section-label">Build rapport before diving in</p>
+        <div class="script-flow">
+          ${cat.rapportQuestions.map(c=>`
+            <div class="script-chunk">
+              <div class="script-chunk-tag">${c.tag}</div>
+              <div><p class="script-chunk-text">${c.text}</p></div>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        ${cat.intakeScript ? `
+        <p class="section-label">Get the rest of their info</p>
+        <div class="script-flow">
+          ${cat.intakeScript.map(c=>`
+            <div class="script-chunk">
+              <div class="script-chunk-tag">${c.tag}</div>
+              <div>
+                <p class="script-chunk-text">${c.text}</p>
+                ${renderResistanceNote(c.resistance)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        ${renderBranches(cat.zipReluctance, "If they hesitate to share it", "🔒")}
+        ${cat.callInSoaNote ? `
+        <div class="stage-note">
+          <span class="stage-note-icon">📞</span>
+          <div class="stage-note-body">
+            <span class="stage-note-label">Coaching note — 48-hour rule exception</span>
+            <p>${cat.callInSoaNote}</p>
+          </div>
+        </div>
+        ` : ''}
+        ${cat.anchorQuestions ? `
+        <div class="stage-note">
+          <span class="stage-note-icon">🛟</span>
+          <div class="stage-note-body">
+            <span class="stage-note-label">Coaching note — safety net if you freeze</span>
+            <p>${cat.anchorQuestions}</p>
+          </div>
+        </div>
+        ` : ''}
+        ${cat.discoveryBeforePitch ? `
+        <div class="stage-note">
+          <span class="stage-note-icon">🎯</span>
+          <div class="stage-note-body">
+            <span class="stage-note-label">Coaching note — discover before you pitch</span>
+            <p>${cat.discoveryBeforePitch}</p>
+          </div>
+        </div>
+        ` : ''}
+        ${renderTrustPhrases(cat.trustPhrases)}
+        ${renderQuickJump(cat, {id:"no-objection-jump", label:"No objection? Skip to Part 2 — Explain A &amp; B ↓"})}
+        ${renderObjectionGroups(groupsFor(1))}
+      </div>
+    `;
+
+    // Part 2 — Explain Original Medicare (A & B), plus Part C/D reference, with its own objections
+    html += `
+      <div class="part-block" id="part-2-block">
+        <div class="part-head"><div class="part-num">2</div><div class="part-title">Explain Original Medicare (Part A &amp; B)</div></div>
+        ${cat.partsAB ? `
+        <div class="opening">
+          <p>${cat.partsAB.ask}</p>
+          <div class="stage-note">
+            <span class="stage-note-icon">👁</span>
+            <div class="stage-note-body">
+              <span class="stage-note-label">Don't read aloud</span>
+              <p>${cat.partsAB.note}</p>
+            </div>
+          </div>
+          <p>${cat.partsAB.explain}</p>
+        </div>
+        ` : ''}
+        ${cat.notCoveredScript ? `<div class="opening"><p>${cat.notCoveredScript}</p></div>` : ''}
+        ${cat.partsCD ? `<div class="opening"><p>${cat.partsCD}</p></div>` : ''}
+        ${renderBranches(cat.additionalKnowledge, "Good to know — penalties &amp; IRMAA", "📋")}
+        ${renderBranchQuickJump(cat.part2Branches)}
+        ${renderBranches(cat.part2Branches, "If they ask")}
+      </div>
+    `;
+
+    // Part 3 — Get Medicare Details (MBI, Effective Date, Extra Help/LIS) — before looking at plans
+    if(cat.medicareDetailsScript){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">3</div><div class="part-title">Get Medicare Details</div></div>
+          <div class="script-flow">
+            ${cat.medicareDetailsScript.map(c=>`
+              <div class="script-chunk">
+                <div class="script-chunk-tag">${c.tag}</div>
+                <div><p class="script-chunk-text">${c.text}</p></div>
+              </div>
+            `).join('')}
+          </div>
+          ${cat.eligibilityIntro ? `<div class="opening"><p>${cat.eligibilityIntro}</p></div>` : ''}
+          ${cat.eligibilityCheck ? `
+          <div class="compliance">
+            <div class="compliance-label">${cat.eligibilityCheck.title}</div>
+            <p>${cat.eligibilityCheck.text}</p>
+          </div>
+          ` : ''}
+          ${renderChecklist(cat.eligibilityChecklist, "Eligibility checklist")}
+          ${renderEligibilityResult()}
+          ${renderBranchQuickJump(cat.part3Branches)}
+          ${renderBranches(cat.part3Branches, "If they ask")}
+        </div>
+      `;
+    }
+
+    // Part 4 — Plan Types: explain plan types → narrow down → interpret → timing
+    if(cat.planTypeBridge){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">4</div><div class="part-title">Plan Types</div></div>
+
+          ${cat.soaCheckpoint ? `
+          <div class="compliance">
+            <div class="compliance-label">Required checkpoint — Scope of Appointment (SOA)</div>
+            <p>${cat.soaCheckpoint}</p>
+          </div>
+          ` : ''}
+
+          <p class="section-label">Step 1 — Explain the plan types</p>
+          ${cat.planTypeBridge ? `<div class="opening"><p>${cat.planTypeBridge}</p></div>` : ''}
+          ${renderPlanButtons(cat.planTypeOptions)}
+          ${cat.planTypeWrapup ? `<div class="opening"><p>${cat.planTypeWrapup}</p></div>` : ''}
+
+          ${cat.narrowingQuestions ? `
+          <p class="section-label">Step 2 — Narrow it down (tap what applies as you ask)</p>
+          <div class="script-flow">
+            ${cat.narrowingQuestions.map(c=>`
+              <div class="script-chunk">
+                <div class="script-chunk-tag">${c.tag}</div>
+                <div>
+                  <p class="script-chunk-text">${c.text}</p>
+                  ${renderSignalRow(c.signals)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${renderSignalTally(cat.narrowingQuestions)}
+          ` : ''}
+
+          ${cat.planMappingGuide ? `
+          <p class="section-label">Step 3 — Interpret what you heard</p>
+          <div class="stage-note">
+            <span class="stage-note-icon">🧭</span>
+            <div class="stage-note-body">
+              <span class="stage-note-label">How to map their answers</span>
+              <p>${cat.planMappingGuide}</p>
+            </div>
+          </div>
+          ` : ''}
+
+          ${cat.enrollmentPeriodsReview ? `
+          <p class="section-label">Step 4 — Check enrollment timing</p>
+          <div class="script-flow">
+            <div class="script-chunk">
+              <div class="script-chunk-tag">${cat.enrollmentPeriodsReview.tag}</div>
+              <div><p class="script-chunk-text">${cat.enrollmentPeriodsReview.text}</p></div>
+            </div>
+          </div>
+          ` : ''}
+
+          ${renderBranchQuickJump(cat.part4Branches)}
+          ${renderBranches(cat.part4Branches, "If they ask")}
+        </div>
+      `;
+    }
+
+    // Part 5 — Personal Health Info (doctors, medications) — collected after they pick a plan type
+    if(cat.healthInfoScript){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">5</div><div class="part-title">Get Their Health Info</div></div>
+          <div class="script-flow">
+            ${cat.healthInfoScript.map(c=>`
+              <div class="script-chunk">
+                <div class="script-chunk-tag">${c.tag}</div>
+                <div>
+                  <p class="script-chunk-text">${c.text}</p>
+                  ${renderResistanceNote(c.resistance)}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${cat.agentOnlyNote ? `
+          <div class="stage-note">
+            <span class="stage-note-icon">🔒</span>
+            <div class="stage-note-body">
+              <span class="stage-note-label">Agent prep only — don't show the client</span>
+              <p>${cat.agentOnlyNote}</p>
+            </div>
+          </div>
+          ` : ''}
+          ${renderBranchQuickJump(cat.part5Branches)}
+          ${renderBranches(cat.part5Branches, "If they ask")}
+        </div>
+      `;
+    }
+
+    // Part 6 — Network Types (HMO, EPO, POS, PPO, PFFS, SNP)
+    if(cat.reference && cat.reference.networks){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">6</div><div class="part-title">Network Types</div></div>
+          ${cat.reference.networkQuestion ? `<div class="opening"><p>${cat.reference.networkQuestion}</p></div>` : ''}
+          <div class="ref-block">
+            <p class="section-label">HMO, EPO, POS, PPO, PFFS &amp; SNP</p>
+            <div class="ref-grid">
+              ${cat.reference.networks.map(p=>`
+                <div class="ref-card">
+                  <div class="ref-name">${p.name}</div>
+                  <div class="ref-title">${p.title}</div>
+                  <p>${p.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Part 7 — Pre-Enrollment Checklist (CMS-required, right before they actually enroll)
+    if(cat.preEnrollmentChecklist){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">7</div><div class="part-title">Pre-Enrollment Checklist</div></div>
+          <p class="category-desc">Before making an enrollment decision, the client needs to fully understand the benefits and the rules. Confirm each of these was covered before they enroll.</p>
+          ${renderChecklist(cat.preEnrollmentChecklist.benefits, "Understanding the Benefits")}
+          ${renderChecklist(cat.preEnrollmentChecklist.rules, "Understanding Important Rules")}
+        </div>
+      `;
+    }
+  }
+  if(!cat.objectionGroups){
+    html += renderGenericParts(cat);
+  }
+
+  main.innerHTML = html;
+
+  main.querySelectorAll('.card-q').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      btn.closest('.card').classList.toggle('open');
+    });
+  });
+
+  main.querySelectorAll('.obj-group-head').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      btn.closest('.obj-group').classList.toggle('open');
+    });
+  });
+
+  main.querySelectorAll('.quick-jump-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const target = document.getElementById(chip.dataset.target);
+      if(!target) return;
+      target.classList.add('open');
+      const group = target.closest('.obj-group');
+      if(group) group.classList.add('open');
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      target.classList.remove('flash');
+      void target.offsetWidth;
+      target.classList.add('flash');
+    });
+  });
+
+  const noObjBtn = document.getElementById('no-objection-jump');
+  if(noObjBtn){
+    noObjBtn.addEventListener('click', ()=>{
+      const part2 = document.getElementById('part-2-block');
+      if(part2) part2.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
+
+  main.querySelectorAll('[data-checklist]').forEach(block=>{
+    const items = block.querySelectorAll('[data-checklist-item]');
+    const progress = block.querySelector('[data-progress]');
+    const total = items.length;
+
+    function updateProgress(){
+      let checkedCount = 0;
+      items.forEach(item=>{
+        const cb = item.querySelector('input[type="checkbox"]');
+        if(cb.checked){
+          item.classList.add('checked');
+          checkedCount++;
+        } else {
+          item.classList.remove('checked');
+        }
+      });
+      progress.textContent = `${checkedCount}/${total}`;
+      progress.classList.toggle('complete', checkedCount === total);
+    }
+
+    items.forEach(item=>{
+      const cb = item.querySelector('input[type="checkbox"]');
+      cb.addEventListener('change', ()=>{
+        checklistState[cb.id] = cb.checked;
+        updateProgress();
+        updateEligibilityResult();
+      });
+    });
+
+    const resetBtn = block.querySelector('[data-checklist-reset]');
+    if(resetBtn){
+      resetBtn.addEventListener('click', ()=>{
+        items.forEach(item=>{
+          const cb = item.querySelector('input[type="checkbox"]');
+          cb.checked = false;
+          checklistState[cb.id] = false;
+        });
+        updateProgress();
+        updateEligibilityResult();
+      });
+    }
+  });
+
+  function updateEligibilityResult(){
+    const resultEl = main.querySelector('[data-eligibility-result]');
+    if(!resultEl) return;
+    resultEl.outerHTML = renderEligibilityResult();
+  }
+
+  const signalTally = main.querySelector('[data-signal-tally]');
+  main.querySelectorAll('[data-signal-cb]').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      checklistState[cb.id] = cb.checked;
+      const chip = cb.closest('[data-signal-chip]');
+      if(chip) chip.classList.toggle('checked', cb.checked);
+      if(signalTally){
+        ['ma','medsupp','ppo'].forEach(lean=>{
+          const count = [...main.querySelectorAll(`[data-signal-cb][data-lean="${lean}"]`)].filter(c=>c.checked).length;
+          const el = signalTally.querySelector(`[data-tally="${lean}"]`);
+          if(el) el.textContent = count;
+        });
+      }
+    });
+  });
+}
+
+function renderCompliance(cat){
+  if(!cat.complianceDisclosure) return '';
+  return `
+    <div class="compliance">
+      <div class="compliance-label">Required disclosure — read word-for-word first</div>
+      <p>${cat.complianceDisclosure}</p>
+      <div class="compliance-note">Must be stated before anything else on the call.</div>
+    </div>
+  `;
+}
+
+function renderOpeningFlow(cat){
+  return `
+    ${cat.openingIntro ? `<div class="opening"><p>${cat.openingIntro}</p></div>` : ''}
+    ${renderCompliance(cat)}
+    ${cat.openingContinued ? `<div class="opening"><p>${cat.openingContinued}</p></div>` : ''}
+    ${(!cat.openingIntro && cat.opening) ? `<div class="opening"><p>${cat.opening}</p></div>` : ''}
+  `;
+}
+
+function renderGenericParts(cat){
+  let html = '';
+
+  if(cat.type === 'followup'){
+    // Part 1 — The Cadence (Day 3 / 30 / 60 / 90)
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">1</div><div class="part-title">The Cadence</div></div>
+        <div class="script-flow">
+          ${cat.cadence.map(c=>`
+            <div class="script-chunk">
+              <div class="script-chunk-tag">${c.tag}</div>
+              <div>
+                <p class="script-chunk-text">${c.intro}</p>
+                ${cat.recordingDisclosure ? `
+                <div class="mini-disclosure">
+                  <span class="icon">⚠</span>
+                  <p>${cat.recordingDisclosure}</p>
+                </div>
+                ` : ''}
+                <p class="script-chunk-text">${c.continued}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Part 2 — The Compliance Boundary + trigger phrases
+    const groups = [{ section: "Trigger Phrases — Client-Initiated Only", items: cat.triggerPhrases }];
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">2</div><div class="part-title">The Compliance Boundary</div></div>
+        <div class="compliance">
+          <div class="compliance-label">Required rule — do not initiate</div>
+          <p>${cat.complianceNote}</p>
+          <div class="compliance-note">Only respond to these if the client says something like the phrases below, first.</div>
+        </div>
+        ${renderQuickJump({objectionGroups: groups})}
+        ${renderObjectionGroups(groups)}
+      </div>
+    `;
+    return html;
+  }
+
+  if(cat.type === 'framework'){
+    // Part 1 — Start of Script
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">1</div><div class="part-title">Start of Script</div></div>
+        ${renderOpeningFlow(cat)}
+        ${cat.fwIntro ? `
+        <div class="stage-note">
+          <span class="stage-note-icon">👁</span>
+          <div class="stage-note-body">
+            <span class="stage-note-label">Coaching note — don't read aloud</span>
+            <p>${cat.fwIntro}</p>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    `;
+
+    // Part 2 — Discovery Questions (goal / who / objection)
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">2</div><div class="part-title">Discovery Questions</div></div>
+        ${cat.questions.map((q,i)=>`
+          <div class="fw-step">
+            <div class="fw-step-num">${i+1}</div>
+            <div class="fw-step-rail">
+              <div class="fw-card">
+                <div class="fw-step-title">${q.title}</div>
+                <p class="fw-ask">${q.ask}</p>
+                <div class="fw-answers">
+                  <div class="fw-answer bad"><span class="tag">Bad answer</span><p>${q.bad}</p></div>
+                  <div class="fw-answer good"><span class="tag">Good answer</span><p>${q.good}</p></div>
+                </div>
+                <div class="fw-followup"><span class="tag">If they stall</span>${q.followUp}</div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Part 3 — The Close
+    html += `
+      <div class="part-block">
+        <div class="part-head"><div class="part-num">3</div><div class="part-title">The Close</div></div>
+        <p class="fw-close-intro">${cat.close.intro}</p>
+        ${cat.close.options.map(o=>`
+          <div class="fw-option">
+            <div class="fw-option-name">${o.name}</div>
+            <p class="fw-option-stack">${o.stack}</p>
+            <div class="fw-option-price">${o.price}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Part 4 — Re-Engaging Hard-to-Contact Leads
+    if(cat.reEngageScript){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">4</div><div class="part-title">Re-Engaging Hard-to-Contact Leads</div></div>
+          ${cat.reEngageNote ? `
+          <div class="stage-note">
+            <span class="stage-note-icon">📞</span>
+            <div class="stage-note-body">
+              <span class="stage-note-label">Coaching note — persistence pays</span>
+              <p>${cat.reEngageNote}</p>
+            </div>
+          </div>
+          ` : ''}
+          <div class="script-flow">
+            ${cat.reEngageScript.map(c=>`
+              <div class="script-chunk">
+                <div class="script-chunk-tag">${c.tag}</div>
+                <div><p class="script-chunk-text">${c.text}</p></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Part 5 — Obtaining Referrals
+    if(cat.referralScript){
+      html += `
+        <div class="part-block">
+          <div class="part-head"><div class="part-num">5</div><div class="part-title">Obtaining Referrals</div></div>
+          ${cat.referralNote ? `
+          <div class="stage-note">
+            <span class="stage-note-icon">🤝</span>
+            <div class="stage-note-body">
+              <span class="stage-note-label">Coaching note — be specific</span>
+              <p>${cat.referralNote}</p>
+            </div>
+          </div>
+          ` : ''}
+          <div class="script-flow">
+            ${cat.referralScript.map(c=>`
+              <div class="script-chunk">
+                <div class="script-chunk-tag">${c.tag}</div>
+                <div><p class="script-chunk-text">${c.text}</p></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    return html;
+  }
+
+  // Flat-objection categories (Health, Property, Auto) — wrap into a single group
+  const groups = [{ section: "Common Objections", items: cat.objections }];
+  html += `
+    <div class="part-block">
+      <div class="part-head"><div class="part-num">1</div><div class="part-title">Start of Script</div></div>
+      ${renderOpeningFlow(cat)}
+      ${renderQuickJump({objectionGroups: groups})}
+      ${renderObjectionGroups(groups)}
+    </div>
+  `;
+  return html;
+}
+
+function buildLegacyOpeningAndObjections(cat){
+  if(cat.objectionGroups) return '';
+  let html = `<div class="opening"><p>${cat.opening}</p></div>`;
+  const filtered = cat.objections.filter(matchesSearch);
+  html += `<p class="section-label">Common objections</p>`;
+  if(filtered.length === 0){
+    html += `<div class="empty">No objections match “${searchTerm}” in this category.</div>`;
+  } else {
+    html += filtered.map((o,i)=>`
+      <div class="card answered ${searchTerm ? 'open' : ''}" data-idx="${i}">
+        <button class="card-q">
+          <span class="qtext">${o.q}</span>
+          <span class="chevron">›</span>
+        </button>
+        <div class="card-a">
+          <div class="card-a-inner">
+            <div class="say-label">You say</div>
+            <p>${o.a}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+  return html;
+}
+
+function slugify(text){
+  return text.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+}
+
+function computeEligibility(){
+  const hasA = !!checklistState['elig-parta'];
+  const hasB = !!checklistState['elig-partb'];
+  const hasMedicaid = !!checklistState['elig-medicaid'];
+
+  if(hasA && hasB){
+    if(hasMedicaid){
+      return {
+        state: 'blocked',
+        eligibleFor: ['Part D', 'Medicare Advantage / MAPD'],
+        notEligibleFor: [{item:'Medicare Supplement', reason:'has Medicaid'}]
+      };
+    }
+    return {
+      state: 'full',
+      eligibleFor: ['Part D', 'Medicare Advantage / MAPD', 'Medicare Supplement'],
+      notEligibleFor: []
+    };
+  }
+  if(hasA || hasB){
+    return {
+      state: 'partial',
+      eligibleFor: ['Part D (standalone)'],
+      notEligibleFor: [{item:'Medicare Advantage / MAPD', reason:`only has Part ${hasA ? 'A' : 'B'}`}, {item:'Medicare Supplement', reason:`only has Part ${hasA ? 'A' : 'B'}`}]
+    };
+  }
+  return {
+    state: 'unknown',
+    eligibleFor: [],
+    notEligibleFor: [],
+    unknownText: 'Check Part A and Part B above to see what they qualify for.'
+  };
+}
+
+function renderEligibilityResult(){
+  const r = computeEligibility();
+  return `
+    <div class="eligibility-result state-${r.state}" data-eligibility-result>
+      <span class="result-label">Auto-determined eligibility</span>
+      ${r.unknownText ? `<p class="elig-line elig-unknown">❔ ${r.unknownText}</p>` : ''}
+      ${r.eligibleFor.length ? `<p class="elig-line elig-good">✅ Eligible for: ${r.eligibleFor.join(', ')}</p>` : ''}
+      ${r.notEligibleFor.map(n => `<p class="elig-line elig-bad">🚫 Not eligible for: ${n.item} — ${n.reason}</p>`).join('')}
+    </div>
+  `;
+}
+
+function renderChecklist(items, title, accent){
+  if(!items || items.length === 0) return '';
+  const checkedCount = items.filter(item => checklistState[item.id]).length;
+  const accentClass = accent ? `accent-${accent}` : '';
+  return `
+    <div class="checklist-block ${accentClass}" data-checklist>
+      <div class="checklist-header">
+        <span class="checklist-title">${title}</span>
+        <span class="checklist-progress ${checkedCount === items.length ? 'complete' : ''}" data-progress>${checkedCount}/${items.length}</span>
+      </div>
+      ${items.map(item=>`
+        <div class="checklist-item ${checklistState[item.id] ? 'checked' : ''}" data-checklist-item>
+          <input type="checkbox" id="${item.id}" ${checklistState[item.id] ? 'checked' : ''}>
+          <label for="${item.id}">${item.label}</label>
+        </div>
+      `).join('')}
+      <button class="checklist-reset" type="button" data-checklist-reset>Reset checklist</button>
+    </div>
+  `;
+}
+
+function renderSignalRow(signals){
+  if(!signals || signals.length === 0) return '';
+  return `
+    <div class="signal-row">
+      ${signals.map(s => `
+        <label class="signal-chip lean-${s.lean} ${checklistState[s.id] ? 'checked' : ''}" data-signal-chip>
+          <input type="checkbox" id="${s.id}" data-signal-cb data-lean="${s.lean}" ${checklistState[s.id] ? 'checked' : ''}>
+          ${s.label}
+        </label>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderSignalTally(questions){
+  const allSignals = (questions||[]).flatMap(q => q.signals || []);
+  if(allSignals.length === 0) return '';
+  const count = lean => allSignals.filter(s => s.lean === lean && checklistState[s.id]).length;
+  return `
+    <div class="signal-tally" data-signal-tally>
+      <span class="signal-tally-label">Leaning</span>
+      <span class="tally-chip lean-ma">MA/MAPD <span data-tally="ma">${count('ma')}</span></span>
+      <span class="tally-chip lean-medsupp">Med Supp <span data-tally="medsupp">${count('medsupp')}</span></span>
+      <span class="tally-chip lean-ppo">PPO <span data-tally="ppo">${count('ppo')}</span></span>
+    </div>
+  `;
+}
+
+function renderVoicemailButton(text){
+  if(!text) return '';
+  return `
+    <div class="plan-buttons">
+      <div class="card plan-card" id="voicemail-script">
+        <button class="card-q">
+          <span class="qtext">📵 Voicemail Script</span>
+          <span class="chevron">›</span>
+        </button>
+        <div class="card-a">
+          <div class="card-a-inner">
+            <div class="say-label">You say</div>
+            <p>${text}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAlreadyHaveButton(steps){
+  if(!steps || steps.length === 0) return '';
+  return `
+    <div class="plan-buttons">
+      <div class="card plan-card" id="already-have-medicare">
+        <button class="card-q">
+          <span class="qtext">If they already have Medicare</span>
+          <span class="chevron">›</span>
+        </button>
+        <div class="card-a">
+          <div class="card-a-inner">
+            ${steps.map(s=>`
+              <div class="already-step">
+                <div class="already-step-tag">${s.tag}</div>
+                <p>${s.text}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPlanButtons(items){
+  if(!items || items.length === 0) return '';
+  return `
+    <div class="plan-buttons">
+      ${items.map(p=>`
+        <div class="card plan-card" id="plan-${slugify(p.name)}">
+          <button class="card-q">
+            <span class="qtext">${p.name}</span>
+            <span class="chevron">›</span>
+          </button>
+          <div class="card-a">
+            <div class="card-a-inner">
+              <div class="say-label">You say</div>
+              <p>${p.text}</p>
+              ${p.deepDive ? `
+              <div class="deep-dive">
+                <div class="deep-dive-label">If they want this one — dive in further</div>
+                <p>${p.deepDive}</p>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderBranches(items, label, emoji){
+  if(!items || items.length === 0) return '';
+  const filtered = items.filter(matchesSearch);
+  if(searchTerm && filtered.length === 0) return '';
+  const openClass = searchTerm ? 'open' : '';
+  const prefix = emoji !== undefined ? emoji : '🌱';
+  return `
+    <div class="obj-group branch-group ${openClass}">
+      <button class="obj-group-head">
+        <span>${prefix ? prefix + ' ' : ''}${label} <span class="count">${filtered.length}</span></span>
+        <span class="chevron">›</span>
+      </button>
+      <div class="obj-group-body">
+        <div class="obj-group-body-inner">
+          ${filtered.map(o=>`
+            <div class="card branch-card ${openClass}" id="obj-${slugify(o.q)}">
+              <button class="card-q">
+                <span class="qtext">${o.q}</span>
+                <span class="chevron">›</span>
+              </button>
+              <div class="card-a">
+                <div class="card-a-inner">
+                  <div class="say-label">You say</div>
+                  <p>${o.a}</p>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderObjectionGroups(groups){
+  return groups.map((g, gi)=>{
+    const filtered = g.items.filter(matchesSearch);
+    if(searchTerm && filtered.length === 0) return '';
+    const openClass = searchTerm ? 'open' : '';
+    return `
+      <div class="obj-group ${openClass}" data-gidx="${gi}">
+        <button class="obj-group-head">
+          <span>${g.section} <span class="count">${filtered.length}</span></span>
+          <span class="chevron">›</span>
+        </button>
+        <div class="obj-group-body">
+          <div class="obj-group-body-inner">
+            ${filtered.map((o,i)=>`
+              <div class="card answered ${openClass}" id="obj-${slugify(o.q)}" data-idx="${gi}-${i}">
+                <button class="card-q">
+                  <span class="qtext">${o.q}</span>
+                  <span class="chevron">›</span>
+                </button>
+                <div class="card-a">
+                  <div class="card-a-inner">
+                    <div class="say-label">You say</div>
+                    <p>${o.a}</p>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderFramework(main, cat){
+  let html = `
+    <div class="category-head">
+      <h2>${cat.label}</h2>
+      <span class="category-tagline">${cat.tagline}</span>
+    </div>
+    <p class="category-desc">${cat.desc}</p>
+    <div class="opening"><p>${cat.opening}</p></div>
+    <div class="fw-intro">${cat.fwIntro}</div>
+    <p class="section-label">The three questions</p>
+  `;
+
+  html += cat.questions.map((q,i)=>`
+    <div class="fw-step">
+      <div class="fw-step-num">${i+1}</div>
+      <div class="fw-step-rail">
+        <div class="fw-card">
+          <div class="fw-step-title">${q.title}</div>
+          <p class="fw-ask">${q.ask}</p>
+          <div class="fw-answers">
+            <div class="fw-answer bad"><span class="tag">Bad answer</span><p>${q.bad}</p></div>
+            <div class="fw-answer good"><span class="tag">Good answer</span><p>${q.good}</p></div>
+          </div>
+          <div class="fw-followup"><span class="tag">If they stall</span>${q.followUp}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  html += `
+    <div class="fw-close">
+      <div class="fw-close-head">
+        <h3>The close</h3>
+        <span class="fw-close-sub">Stack the value, price last</span>
+      </div>
+      <p class="fw-close-intro">${cat.close.intro}</p>
+      ${cat.close.options.map(o=>`
+        <div class="fw-option">
+          <div class="fw-option-name">${o.name}</div>
+          <p class="fw-option-stack">${o.stack}</p>
+          <div class="fw-option-price">${o.price}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  main.innerHTML = html;
+}
+
+document.getElementById('search').addEventListener('input', (e)=>{
+  searchTerm = e.target.value.trim();
+  renderMain();
+});
+
+renderTabs();
+renderMain();
+</script>
+</body>
+</html>
