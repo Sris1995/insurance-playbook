@@ -1332,12 +1332,19 @@
 .summary-row strong{font-size:13px;line-height:1.35}
 
 .mca-sticky-summary{min-width:0;align-self:stretch}
-.mca-sticky-summary .plan-summary-card{
+.mca-sticky-stack{
   position:sticky;
   top:16px;
   z-index:5;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
-.call-notes-card{padding:0;overflow:hidden;box-shadow:0 5px 16px rgba(0,0,0,.04)}
+.mca-sticky-summary .plan-summary-card{position:static}
+.call-notes-card{padding:14px;overflow:hidden;box-shadow:0 5px 16px rgba(0,0,0,.04)}
+.call-notes-card .mca-notes{width:100%;min-height:120px;box-sizing:border-box;margin-top:10px}
+.call-notes-card .note-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.call-notes-card .note-actions .action-btn{flex:1 1 160px}
 
 
 
@@ -1350,13 +1357,11 @@
 
 
 
-.mobile-notes-panel{display:none!important}
 @media(max-width:980px){
   .mca-call-layout{display:block}
   .mca-sticky-summary{display:none}
+  .mca-sticky-stack{position:static}
   .mca-sticky-summary .plan-summary-card{position:static}
-  .mobile-notes-panel{display:none}
-  .mobile-notes-panel[style*="display: block"]{display:block!important}
 }
 
 
@@ -1633,8 +1638,8 @@ const DATA = [
     voicemailScript: "Hi [Name], this is [Name] with [Agency] — sorry I missed you! I'm a licensed Medicare agent, and I'm reaching out because you recently looked into your Medicare options. I'd love to go over a couple of things that could either save you money or make sure you're not missing out on any benefits you qualify for — no pressure at all. Give me a call back whenever works for you at [phone number]. Again, this is [Name] with [Agency], and my number is [phone number]. Thanks, and I look forward to connecting!",
     complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We do not offer every plan available in your area. Currently, we represent 0-78 organizations which offer 0-2,613 products in your area. Please contact medicare.gov, 1-800-MEDICARE, or your local State Health Insurance Program (SHIP) to get information on all of your options.",
     openingIntro: "Hi [Name], how are you doing today? This is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself, but —",
-    nameAsk: {tag:"Confirm Name", text:"Before we get started, can I get your full name, first and last?"},
-    openingContinued: "Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction.",
+    nameAsk: {tag:"Confirm Name", text:"Before we get started, can I get your full name?"},
+    openingContinued: "Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?",
     intakeScript: [
       {tag:"Date of Birth", text:"Great, thank you. And could I grab your date of birth too? That just helps me make sure everything lines up correctly on my end.", resistance:"Totally understandable! Even just your age range helps me point you in the right direction — are you in your 50s, 60s, or beyond?"},
       {tag:"Zip Code", text:"Perfect — one last quick one, what zip code are you in? Coverage and pricing can vary quite a bit by area, so I want to make sure I'm only showing you what's actually available where you live."}
@@ -1743,7 +1748,7 @@ const DATA = [
     ],
     healthInfoScript: [
       {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
-      {tag:"Medications", text:"And last one — what prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you fill it. Also, do you have a preferred pharmacy, and would you be open to using a mail-order pharmacy if it saved you money?"}
+      {tag:"Medications", text:"What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?"}
     ],
     agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
     part5Branches: [
@@ -1975,7 +1980,7 @@ const DATA = [
     ],
     healthInfoScript: [
       {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
-      {tag:"Medications", text:"And last one — what prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you fill it. Also, do you have a preferred pharmacy, and would you be open to using a mail-order pharmacy if it saved you money?"}
+      {tag:"Medications", text:"What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?"}
     ],
     agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
     part5Branches: [
@@ -2132,6 +2137,7 @@ function renderTabs(){
   tabs.innerHTML = `
     <button class="tab-btn ${activeCategory==='assistant'?'active':''}" data-id="assistant">☎ Medicare Call Assistant</button>
     <button class="tab-btn ${activeCategory==='life-assistant'?'active':''}" data-id="life-assistant">♥ Life Call Assistant</button>
+    <button class="tab-btn ${activeCategory==='appointment-setter'?'active':''}" data-id="appointment-setter">📅 Appointment Setter</button>
   ` + DATA.filter(visiblePlaybookCategory).map(cat => `
     <button class="tab-btn ${cat.id===activeCategory?'active':''}" data-id="${cat.id}">
       ${cat.label} <span class="count">${countBadge(cat)}</span>
@@ -2308,8 +2314,9 @@ function renderCallAssistant(){
   const m = DATA.find(c=>c.id==="medicare");
   if(!m) return `<div class="empty">Medicare script data not found.</div>`;
 
-  if(!window.MCA) window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:"",elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
+  if(!window.MCA) window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:"",callStartedAt:new Date().toISOString(),elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
   const A=window.MCA;
+  if(!A.callStartedAt) A.callStartedAt=new Date().toISOString();
   if(!A.elig) A.elig={};
 
   const btn=(key,label,sub,field)=>`<button type="button" class="choice-btn ${A[field]===key?'selected':''}" data-mca-action="branch" data-mca-field="${field}" data-mca-value="${key}"><strong>${label}</strong>${sub?`<span>${sub}</span>`:''}</button>`;
@@ -2828,11 +2835,10 @@ function renderCallAssistant(){
       ${step("Doctor Review",(m.healthInfoScript||[]).find(x=>x.tag==="Doctors")?.text || "Which doctors and specialists do you want to make sure we account for?")}
     </div>
     <div class="flow-card">
-      <h3 class="flow-title">Prescriptions & Pharmacy</h3>
+      <h3 class="flow-title">Prescriptions</h3>
       ${contextualObjections("rx")}
       <div class="script-now"><div class="mini">Transition</div><p>Now let's look at your prescriptions so we can account for drug coverage and costs.</p></div>
-      ${step("Prescriptions",(m.healthInfoScript||[]).find(x=>x.tag==="Medications")?.text || "What prescriptions are you currently taking?")}
-      ${step("Pharmacy","Which pharmacy do you normally use, and are you open to using a preferred pharmacy if it lowers your costs?")}
+      ${step("Prescriptions",(m.healthInfoScript||[]).find(x=>x.tag==="Medications")?.text || "What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?")}
     </div>
     <div class="compare-box">
       <button type="button" class="action-btn" onclick="setReadyToCompare()">✓ Ready to Compare Plans</button>
@@ -2873,6 +2879,7 @@ function renderCallAssistant(){
   }
 
   function planReviewReaction(k){
+    const R=A.planReview||{};
     const blocks={
       standout:`<div class="script-now"><div class="mini">Say this</div><p>Great. Before we move forward, let's make sure you're comfortable with the plan's costs, provider access, prescription coverage if applicable, and the benefits we've reviewed.</p></div>
         <div class="choice-grid">
@@ -2895,14 +2902,45 @@ function renderCallAssistant(){
         <button type="button" class="mini-choice" onclick="setMedicareOutcome('stay')">Confirm Keep Current Coverage</button>`,
       notready:`<div class="script-now"><div class="mini">Say this</div><p>No problem. What would help you feel comfortable deciding — more time, another comparison, talking with someone, or additional information?</p></div>
         <div class="choice-grid">
-          <button type="button" class="choice-btn" onclick="setMedicareOutcome('think')"><strong>Needs Time to Think</strong></button>
-          <button type="button" class="choice-btn" onclick="setMedicareOutcome('callback')"><strong>Schedule Follow-Up</strong></button>
-          <button type="button" class="choice-btn" onclick="setMedicareOutcome('family')"><strong>Talk With Spouse / Family</strong></button>
-          <button type="button" class="choice-btn" onclick="setMedicareOutcome('info')"><strong>Needs More Information</strong></button>
+          <button type="button" class="choice-btn ${R.followupReason==="think"?'selected':''}" onclick="setMedicareFollowupReason('think')"><strong>Needs Time to Think</strong></button>
+          <button type="button" class="choice-btn ${R.followupReason==="callback"?'selected':''}" onclick="setMedicareFollowupReason('callback')"><strong>Schedule Follow-Up</strong></button>
+          <button type="button" class="choice-btn ${R.followupReason==="family"?'selected':''}" onclick="setMedicareFollowupReason('family')"><strong>Talk With Spouse / Family</strong></button>
+          <button type="button" class="choice-btn ${R.followupReason==="info"?'selected':''}" onclick="setMedicareFollowupReason('info')"><strong>Needs More Information</strong></button>
         </div>
-        ${A.outcome?`<div class="script-now"><div class="mini">Next step</div><p>${outcomeText(A.outcome)}</p></div>`:""}`
+        ${medicareFollowupSection(R)}`
+
     };
     return blocks[k]||"";
+  }
+
+  function medicareFollowupSection(R){
+    if(!R.followupReason) return "";
+    if(R.followupReason==="info"){
+      return `<div class="script-now"><div class="mini">Ask this</div><p>Absolutely. What information would you like me to go over again or look into for you?</p></div>
+        <div class="choice-grid">
+          <button type="button" class="choice-btn" onclick="setPlanReviewReaction('questions')"><strong>Answer Questions Now</strong></button>
+          <button type="button" class="choice-btn" onclick="setMedicareFollowupReason('callback')"><strong>Get Information & Schedule Follow-Up</strong></button>
+        </div>`;
+    }
+    const scripts={
+      think:"Absolutely, I understand. I want you to feel comfortable with whichever option you choose. Why don't I give you some time to think everything over, and I can follow up with you in a day or two to answer any questions that come up?",
+      family:"Absolutely. I think it's a good idea to talk it over with them. I'll give you some time to go over everything together, and then I can follow up in a day or two so we can answer any questions you or your family may have.",
+      callback:"Absolutely. Let's set up a quick follow-up so we can pick up where we left off."
+    };
+    return `<div class="script-now"><div class="mini">Say this</div><p>${scripts[R.followupReason]||scripts.callback}</p></div>
+      <div class="script-now"><div class="mini">Ask this</div><p>Would tomorrow or the following day work better for me to give you a call back?</p></div>
+      <div class="choice-grid">
+        <button type="button" class="choice-btn ${R.callbackDay==="tomorrow"?'selected':''}" onclick="setMedicareCallbackDay('tomorrow')"><strong>Tomorrow</strong></button>
+        <button type="button" class="choice-btn ${R.callbackDay==="two"?'selected':''}" onclick="setMedicareCallbackDay('two')"><strong>In 2 Days</strong></button>
+      </div>
+      ${R.callbackDay?`<div class="script-now"><div class="mini">Ask this</div><p>What time works best for you?</p></div>
+        <div class="choice-grid">
+          <button type="button" class="choice-btn ${R.callbackTime==="morning"?'selected':''}" onclick="setMedicareCallbackTime('morning')"><strong>Morning</strong></button>
+          <button type="button" class="choice-btn ${R.callbackTime==="afternoon"?'selected':''}" onclick="setMedicareCallbackTime('afternoon')"><strong>Afternoon</strong></button>
+          <button type="button" class="choice-btn ${R.callbackTime==="evening"?'selected':''}" onclick="setMedicareCallbackTime('evening')"><strong>Evening</strong></button>
+          <button type="button" class="choice-btn ${R.callbackTime==="specific"?'selected':''}" onclick="setMedicareCallbackTime('specific')"><strong>Choose a Specific Time</strong></button>
+        </div>
+        ${R.callbackTime?`<div class="script-now"><div class="mini">Next step</div><p>${R.callbackTime==="specific"?"Agree on the exact callback time with the client and schedule it in your calendar or CRM.":"Confirm the callback window with the client and schedule it in your calendar or CRM."}</p></div>`:""}`:""}`;
   }
 
   function outcomeText(k){
@@ -3106,7 +3144,7 @@ function renderCallAssistant(){
     <button type="button" class="action-btn secondary" onclick="toggleMcaPanel('vm')">📵 Voicemail</button>
     <button type="button" class="action-btn secondary" onclick="toggleMcaPanel('obj')">💬 Objection / Question</button>
     <button type="button" class="action-btn secondary" onclick="toggleMcaPanel('ref')">📖 Medicare Reference</button>
-    <button type="button" class="action-btn secondary" onclick="toggleMcaPanel('notes')">📝 Notes</button>
+
   </div>
 
   <div id="mca-vm" class="mca-panel" style="display:none">${step("Voicemail",m.voicemailScript)}</div>
@@ -3131,10 +3169,7 @@ function renderCallAssistant(){
     <input class="mca-search" placeholder="Search Medicare reference…" oninput="filterMcaCards(this,'mca-reference-list')">
     <div id="mca-reference-list">${refs.map(r=>`<details class="mca-search-card"><summary>${r[0]}</summary><div class="mca-answer"><p>${r[1]}</p></div></details>`).join("")}</div>
   </div>
-  <div id="mca-notes" class="mca-panel mobile-notes-panel" style="display:none"><h3>Call Notes</h3>
-    <textarea id="mca-notes-text-mobile" class="mca-notes" placeholder="Type temporary call notes here…" oninput="syncMedicareNotes(this.value)">${A.notes||""}</textarea>
-    <div class="note-actions"><button type="button" class="action-btn" onclick="copyMedicareNotes()">Copy Notes</button><button type="button" class="action-btn secondary" onclick="clearMedicareNotes()">Clear Notes</button></div>
-  </div>
+
 
   <div class="mca-call-layout">
     <main class="mca-call-main">
@@ -3144,8 +3179,8 @@ function renderCallAssistant(){
     <div class="opening"><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
     ${m.complianceDisclosure?`<div class="compliance"><div class="compliance-label">Required reading</div><p>${m.complianceDisclosure}</p></div>`:""}
     <div class="opening"><p>How are you doing today?</p></div>
-    ${step("Confirm Name","Before we get started, can I get your full name, first and last?")}
-    <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction.</p></div>
+    ${step("Confirm Name","Before we get started, can I get your full name?")}
+    <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?</p></div>
   </div>
   ${contextualObjections("opening")}
   ` : `
@@ -3159,8 +3194,8 @@ function renderCallAssistant(){
       <div class="opening"><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
       ${m.complianceDisclosure?`<div class="compliance"><div class="compliance-label">Required reading</div><p>${m.complianceDisclosure}</p></div>`:""}
       <div class="opening"><p>How are you doing today?</p></div>
-      ${step("Confirm Name","Before we get started, can I get your full name, first and last?")}
-      <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction.</p></div>
+      ${step("Confirm Name","Before we get started, can I get your full name?")}
+      <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?</p></div>
     </div>
   </div>
   `}
@@ -3168,7 +3203,15 @@ function renderCallAssistant(){
   ${body}
     </main>
     <aside class="mca-sticky-summary">
-      ${planSummary()}
+      <div class="mca-sticky-stack">
+        ${planSummary()}
+        <div class="plan-summary-card call-notes-card">
+          <div class="sticky-notes-head"><div><div class="eyebrow">Medicare Call Record</div><h3>📝 Call Notes</h3></div><span>${formatMedicareCallStart(A.callStartedAt)}</span></div>
+          <div class="sticky-note-hint"><strong>Non-sensitive notes only.</strong> Do not enter MBI, SSN, payment information, or other sensitive personal information here.</div>
+          <textarea id="mca-notes-text" class="mca-notes" placeholder="Add non-sensitive notes from the conversation…" oninput="syncMedicareNotes(this.value)">${A.notes||""}</textarea>
+          <div class="note-actions"><button type="button" class="action-btn" onclick="copyMedicareCallRecord(this)">📋 Copy Call Summary &amp; Notes</button><button type="button" class="action-btn secondary" onclick="clearMedicareNotes()">Clear Notes</button></div>
+        </div>
+      </div>
     </aside>
   </div>`;
 }
@@ -3234,17 +3277,36 @@ function setFollowUpAction(value){
   renderMain();
 }
 function openFullFinalExpense(){
-  activeCategory="final";
+  // Continue the Medicare cross-sell directly into the existing Life Call
+  // Assistant Final Expense discovery. The legacy "final" playbook category is
+  // intentionally hidden, so routing activeCategory to "final" leaves renderMain
+  // without a visible category to render.
+  window.LIFE={
+    path:"final",
+    stage:3,
+    goal:"",
+    who:"",
+    obstacle:"",
+    need:"Final Expense",
+    coverageType:"Final Expense / Permanent",
+    direction:"",
+    suggestion:"",
+    notes:(window.LIFE&&window.LIFE.notes)||"",
+    showOpening:false,
+    quote:{}
+  };
+  activeCategory="life-assistant";
+  renderTabs();
   renderMain();
 }
 function newMedicareCall(){
-  window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:"",elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
+  window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:"",callStartedAt:new Date().toISOString(),elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
   renderMain();
 }
 function changeMedicarePath(){
   if(!window.MCA) return newMedicareCall();
   const notes=window.MCA.notes||"";
-  window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:notes,elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
+  window.MCA={path:"",newType:"",turn65Need:"",current:"",reason:"",notes:notes,callStartedAt:window.MCA.callStartedAt||new Date().toISOString(),elig:{},enrollmentTiming:"",narrow:{},narrowContinue:false,priorities:{},followAction:"",eduStep:0,eduFamiliar:"",eduDirection:"",mbiStatus:"",compare:false,outcome:""};
   renderMain();
 }
 function medicareBack(){
@@ -3304,6 +3366,28 @@ function setPlanReviewReaction(k){
   if(k==="reset") window.MCA.planReview.reaction="";
   else window.MCA.planReview.reaction=k;
   window.MCA.outcome="";
+  renderMain();
+}
+function setMedicareFollowupReason(k){
+  if(!window.MCA)return;
+  window.MCA.planReview=window.MCA.planReview||{};
+  window.MCA.planReview.followupReason=k;
+  window.MCA.planReview.callbackDay="";
+  window.MCA.planReview.callbackTime="";
+  window.MCA.outcome="";
+  renderMain();
+}
+function setMedicareCallbackDay(k){
+  if(!window.MCA)return;
+  window.MCA.planReview=window.MCA.planReview||{};
+  window.MCA.planReview.callbackDay=k;
+  window.MCA.planReview.callbackTime="";
+  renderMain();
+}
+function setMedicareCallbackTime(k){
+  if(!window.MCA)return;
+  window.MCA.planReview=window.MCA.planReview||{};
+  window.MCA.planReview.callbackTime=k;
   renderMain();
 }
 function setMedicareOutcome(k){ window.MCA.outcome=k; renderMain(); }
@@ -3378,12 +3462,80 @@ function syncMedicareNotes(value){
   if(desktop && desktop.value!==value) desktop.value=value;
   if(mobile && mobile.value!==value) mobile.value=value;
 }
-function copyMedicareNotes(){
-  const el=document.getElementById("mca-notes-text");
-  const txt=el?el.value:(window.MCA?.notes||"");
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt);}
-  else { const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove(); }
+function formatMedicareCallStart(iso){
+  const d=iso?new Date(iso):new Date();
+  if(Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+" · "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
 }
+function medicareCallSummaryLines(){
+  const A=window.MCA||{}, N=A.narrow||{}, R=A.planReview||{}, E=A.elig||{};
+  const lines=[];
+  const add=(label,value)=>{if(value!==undefined&&value!==null&&String(value).trim()!=="")lines.push(label+": "+value);};
+  const pathMap={new:"New to Medicare",current:"Already on Medicare",client:"Existing Client Review",followup:"Resume / Follow-Up"};
+  const newMap={turn65:"Turning 65",retiring:"Retiring / Leaving Employer Coverage",starting:"Starting Medicare Now",unsure:"Not Sure"};
+  const needMap={plan:"Just Need a Plan",education:"Walk Me Through Medicare",questions:"Knows a Little / Has Questions",unsure:"Not Sure What They Need"};
+  const currentMap={mapd:"Medicare Advantage / MAPD",supp:"Medicare Supplement + Part D",original:"Original Medicare Only",employer:"Employer / Retiree + Medicare",unsure:"Not Sure"};
+  const reasonMap={cost:"Cost / Premium",doctor:"Doctor / Network",rx:"Prescriptions",benefits:"Benefits",change:"Plan Changed",moving:"Moving",compare:"Just Comparing",other:"Something Else"};
+  const dirMap={same:"Stay With Same Type",different:"Compare Different Type",both:"Compare Both",unsure:"Not Sure"};
+  const yn={yes:"Yes",no:"No",unsure:"Not Sure"};
+  const costMap={premium:"Lower monthly premium; comfortable with copays when using care",predictable:"Higher monthly premium to help keep costs lower when care is used",unsure:"Not sure"};
+  const extrasMap={very:"Very important",nice:"Nice to have",not:"Not important"};
+  const flexMap={very:"Very important",some:"Somewhat important",not:"Not important",unsure:"Not sure"};
+  const reactionMap={standout:"One option stands out",compare:"Comparing two options",questions:"Has questions",stay:"Keeping current coverage",notready:"Not ready to decide"};
+  const followMap={think:"Needs time to think",callback:"Scheduled follow-up",family:"Talk with spouse / family",info:"Needs more information"};
+  const dayMap={tomorrow:"Tomorrow",two:"In 2 days"};
+  const timeMap={morning:"Morning",afternoon:"Afternoon",evening:"Evening",specific:"Specific time agreed with client"};
+  add("Medicare status",pathMap[A.path]);
+  if(A.path==="new"){add("Situation",newMap[A.newType]);add("What they need",needMap[A.turn65Need]);}
+  if(A.path==="current"){
+    add("Current coverage type",currentMap[A.current]);
+    add("Reason for review",reasonMap[A.reason]);
+    add("Coverage direction",dirMap[A.currentReviewDirection]||dirMap[N.keepType]);
+  }
+  if(A.path==="followup"&&A.followAction) add("Follow-up topic",A.followAction);
+  if(A.enrollmentTiming) add("Enrollment timing",A.enrollmentTiming==="manual-skip"?"Skipped — handled in approved system":A.enrollmentTiming);
+  if(N.medicaid!==undefined) add("Medicaid",yn[N.medicaid]||N.medicaid);
+  if(N.extraHelp!==undefined) add("Extra Help",yn[N.extraHelp]||N.extraHelp);
+  if(N.providerFlex!==undefined) add("Doctor / network priority",flexMap[N.providerFlex]||N.providerFlex);
+  if(N.costStyle!==undefined) add("Cost preference",costMap[N.costStyle]||N.costStyle);
+  if(N.extras!==undefined&&N.extras!=="skip"&&N.extras!=="ask") add("Additional benefits",extrasMap[N.extras]||N.extras);
+  if(A.compare) add("Plan comparison","Reached plan review");
+  add("Plan review outcome",reactionMap[R.reaction]);
+  add("Follow-up decision",followMap[R.followupReason]);
+  if(R.callbackDay) add("Callback day",dayMap[R.callbackDay]||R.callbackDay);
+  if(R.callbackTime) add("Callback time",timeMap[R.callbackTime]||R.callbackTime);
+  return lines;
+}
+function buildMedicareCallRecord(){
+  const A=window.MCA||{};
+  const d=A.callStartedAt?new Date(A.callStartedAt):new Date();
+  const date=Number.isNaN(d.getTime())?"":d.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  const time=Number.isNaN(d.getTime())?"":d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+  const summary=medicareCallSummaryLines();
+  const notes=(A.notes||"").trim();
+  return [
+    "MEDICARE CALL NOTES",
+    "Call Date: "+date,
+    "Call Start Time: "+time,
+    "",
+    "CALL SUMMARY / WHAT WE DISCUSSED",
+    summary.length?summary.map(x=>"• "+x).join("\n"):"• No workflow selections recorded yet.",
+    "",
+    "MY NOTES",
+    notes||"No additional manual notes."
+  ].join("\n");
+}
+function copyMedicareCallRecord(btn){
+  const txt=buildMedicareCallRecord();
+  const done=()=>{if(btn){const old=btn.textContent;btn.textContent="Copied ✓";setTimeout(()=>btn.textContent=old,1400);}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopyMedicareRecord(txt,done));
+  }else fallbackCopyMedicareRecord(txt,done);
+}
+function fallbackCopyMedicareRecord(txt,done){
+  const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();if(done)done();
+}
+function copyMedicareNotes(){copyMedicareCallRecord();}
 function clearMedicareNotes(){
   if(!window.MCA)return;
   window.MCA.notes="";
@@ -4002,6 +4154,220 @@ function medicareRebuttalNext(type,index){
   el.innerHTML=`<div class="flow-card" style="margin-top:12px"><div class="script-now"><div class="mini">Say this</div><p>${esc(item[0])}</p></div><div class="fw-followup"><span class="tag">Next</span>${esc(item[1])}</div></div>`;
   if(typeof stylePromptLabels==="function")stylePromptLabels();
 }
+
+
+window.APPT = window.APPT || {line:"",stage:0,appointmentResponse:"",dayChoice:"",timeChoice:"",outcome:"",objection:""};
+
+function apptLineLabel(k){
+  return ({medicare:"Medicare",life:"Life",health:"Health",pc:"P&C"})[k]||"";
+}
+function apptSetLine(k){
+  window.APPT={line:k,stage:1,appointmentResponse:"",dayChoice:"",timeChoice:"",outcome:"",objection:""};
+  renderMain();
+}
+function apptReset(){
+  window.APPT={line:"",stage:0,appointmentResponse:"",dayChoice:"",timeChoice:"",outcome:"",objection:""};
+  renderMain();
+}
+function apptNext(stage){
+  window.APPT.stage=stage;
+  window.APPT.objection="";
+  renderMain();
+}
+function apptBack(){
+  const A=window.APPT;
+  A.objection="";
+  if(A.stage>=5) A.stage=4;
+  else if(A.stage===4) A.stage=3;
+  else if(A.stage===3) A.stage=2;
+  else if(A.stage===2) A.stage=1;
+  else return apptReset();
+  renderMain();
+}
+function apptAnswer(k){
+  const A=window.APPT;
+  A.appointmentResponse=k;
+  A.objection="";
+  if(k==="yes") A.stage=3;
+  else if(k==="later") A.stage=3;
+  else A.stage=2;
+  renderMain();
+}
+function apptChooseDay(k){
+  window.APPT.dayChoice=k;
+  window.APPT.stage=4;
+  window.APPT.objection="";
+  renderMain();
+}
+function apptChooseTime(k){
+  window.APPT.timeChoice=k;
+  window.APPT.stage=5;
+  window.APPT.objection="";
+  renderMain();
+}
+function apptSetOutcome(k){
+  window.APPT.outcome=k;
+  renderMain();
+}
+function apptShowObjection(k){
+  window.APPT.objection=(window.APPT.objection===k?"":k);
+  renderMain();
+}
+function apptObjectionText(k,line){
+  const product=apptLineLabel(line);
+  const map={
+    notInterested:["I’m not interested.",`I understand. I'm not asking you to make any decisions today. My job is simply to schedule a short conversation with a licensed agent so you can ask questions and decide whether there's anything worth reviewing. Would a quick appointment be okay?`],
+    alreadyCovered:["I already have coverage / a plan.",`Absolutely, and we're not assuming you need to replace anything. The licensed agent can simply review what you have, answer questions, and let you know whether there is anything you may want to consider. Would you be open to a brief appointment?`],
+    haveAgent:["I already have an agent.",`That's completely fine. You don't have to change agents or coverage. This would simply give you another licensed resource to answer questions or provide a comparison if you want one. Would a short appointment be okay?`],
+    busy:["I’m busy right now.",`No problem — I don't need to go through the coverage with you now. I only need a moment to reserve a time when the licensed agent can call. Would tomorrow or the following day be easier?`],
+    whyCalling:["What is this about?",`I'm calling to schedule a conversation with a licensed ${product} agent who can answer your questions and go over the coverage options that may be available. I'm only setting the appointment today.`],
+    sendInfo:["Just send me information.",`I understand. Because the options can depend on your individual situation, the licensed agent can explain what is relevant and answer your questions. We can keep the appointment brief. Is earlier or later in the day usually better?`],
+    spouse:["I need to talk to my spouse / family.",`Absolutely. You're welcome to have them on the call with you. We can schedule a time when you're both available so everyone can hear the same information and ask questions. What day usually works best?`],
+    dontRemember:["I don’t remember requesting anything.",`I understand. I'm not asking you to make a decision or enroll in anything on this call. I'm calling only to see whether you'd like to schedule a conversation with a licensed agent. If you'd rather not, that's completely fine.`],
+    number:["How did you get my number?",`I understand why you'd ask. I don't want to guess about the source of your information. Please refer to the lead or contact source shown in your approved system before answering that question.`],
+    later:["Call me later.",`Absolutely. Instead of catching you at a bad time again, let's choose a day and time that works better for you. Would tomorrow or the following day be better?`],
+    cost:["Does the appointment cost anything?",`There is no charge for speaking with the licensed agent, and there is no obligation to purchase coverage.`],
+    change:["Are you trying to change my coverage?",`No decision is being made on this call. I'm only scheduling a conversation with a licensed agent. They can answer questions and explain options, and you can decide whether you want to do anything after that.`]
+  };
+  return map[k]||["",""];
+}
+function apptObjections(line){
+  const A=window.APPT;
+  const keys=["notInterested","alreadyCovered","haveAgent","busy","whyCalling","sendInfo","spouse","dontRemember","number","later","cost","change"];
+  return `<div class="flow-card">
+    <h3 class="flow-title">💬 Objections &amp; Questions</h3>
+    <p class="category-desc">Tap what the prospect says. Stay on the current step after responding.</p>
+    <div class="choice-grid">
+      ${keys.map(k=>{const x=apptObjectionText(k,line);return `<button type="button" class="choice-btn ${A.objection===k?'selected':''}" onclick="apptShowObjection('${k}')"><strong>${x[0]}</strong></button>`}).join("")}
+    </div>
+    ${A.objection?(()=>{const x=apptObjectionText(A.objection,line);return `<div class="script-now" style="margin-top:12px"><div class="mini">Say this</div><p>${x[1]}</p></div>`})():""}
+  </div>`;
+}
+function apptRecordingDisclosure(){
+  return `<div class="compliance">
+    <div class="compliance-label">Required call-recording disclosure — read before continuing</div>
+    <p>This call may be recorded for quality assurance or training purposes.</p>
+  </div>`;
+}
+function apptNav(){
+  return `<div class="note-actions" style="margin:12px 0 0"><button type="button" class="action-btn secondary" onclick="apptBack()">← Back</button><button type="button" class="action-btn secondary" onclick="apptReset()">↺ Change Insurance Type</button></div>`;
+}
+function renderAppointmentSetter(){
+  const A=window.APPT||(window.APPT={line:"",stage:0,appointmentResponse:"",dayChoice:"",timeChoice:"",outcome:"",objection:""});
+  const line=apptLineLabel(A.line);
+
+  if(!A.line){
+    return `<div class="category-head"><div><h2>📅 Appointment Setter</h2><span class="category-tagline">Preset insurance appointments</span></div></div>
+      <p class="category-desc">Use this for outbound scheduling calls. The setter's job is to schedule the licensed-agent conversation — not quote, recommend coverage, or collect sensitive information.</p>
+      <div class="flow-card">
+        <h3 class="flow-title">What type of appointment are you scheduling?</h3>
+        <div class="choice-grid">
+          <button type="button" class="choice-btn" onclick="apptSetLine('medicare')"><strong>Medicare</strong><span>Pre-set Medicare appointment</span></button>
+          <button type="button" class="choice-btn" onclick="apptSetLine('life')"><strong>Life</strong><span>Life insurance appointment</span></button>
+          <button type="button" class="choice-btn" onclick="apptSetLine('health')"><strong>Health</strong><span>Health insurance appointment</span></button>
+          <button type="button" class="choice-btn" onclick="apptSetLine('pc')"><strong>P&amp;C</strong><span>Property &amp; casualty appointment</span></button>
+        </div>
+      </div>`;
+  }
+
+  const isMed=A.line==="medicare";
+  const intros={
+    life:"I'm calling regarding the life insurance information you were looking into. One of our licensed agents will call you back to answer your questions and go over the options that may fit what you're looking for.",
+    health:"I'm calling regarding health insurance coverage. One of our licensed agents will call you back to answer your questions and go over the options that may be available to you.",
+    pc:"I'm calling regarding your property and casualty insurance needs. One of our licensed agents will call you back to answer your questions and go over the coverage options that may be available."
+  };
+
+  let html=`<div class="category-head"><div><h2>📅 Appointment Setter — ${line}</h2><span class="category-tagline">${isMed?"Pre-Set Medicare With SOA (Phone)":"Guided preset appointment call"}</span></div></div>`;
+
+  // Stage 1: opening/disclosure/reason
+  if(A.stage===1){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 1 of 5</div><h3 class="flow-title">☎ Open the Call</h3>
+      <div class="script-now"><div class="mini">Say this</div><p>Hi [Client Name], this is [Setter Name] from [Agency / Service Name].</p></div>
+      ${apptRecordingDisclosure()}
+      <div class="script-now"><div class="mini">Say this</div><p>${isMed?"I am calling regarding the Medicare plan rates and changes in your area, and one of our LOCAL licensed agents will call you back to go over the new plans in your county.":intros[A.line]}</p></div>
+      <button type="button" class="action-btn" onclick="apptNext(2)">Continue to Appointment Ask →</button>
+      ${apptNav()}
+    </div>`;
+  }
+
+  // Stage 2: appointment ask
+  if(A.stage===2){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 2 of 5</div><h3 class="flow-title">📞 Ask for the Appointment</h3>
+      <div class="script-now"><div class="mini">Ask this</div><p>${isMed?"The phone appointment will be on [Propose DATE / DAY / TIME], okay?":"I'd like to reserve a short phone appointment for the licensed agent to speak with you. Would tomorrow or the following day work better?"}</p></div>
+      ${isMed?`<div class="compliance"><div class="compliance-label">Required checkpoint</div><p><strong>Get an affirmative response before continuing.</strong></p></div>`:""}
+      <div class="choice-grid">
+        <button type="button" class="choice-btn" onclick="apptAnswer('yes')"><strong>✓ Yes / Agreed</strong><span>Continue</span></button>
+        <button type="button" class="choice-btn" onclick="apptAnswer('later')"><strong>Different Day / Time</strong><span>Find a better time</span></button>
+        <button type="button" class="choice-btn" onclick="apptShowObjection('notInterested')"><strong>Objection</strong><span>Handle it without losing your place</span></button>
+      </div>
+    </div>`;
+  }
+
+  // Stage 3: Medicare disclosure/qualification OR date
+  if(A.stage===3 && isMed){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 3 of 5</div><h3 class="flow-title">Medicare Permission &amp; Qualification</h3>
+      <div class="compliance"><div class="compliance-label">Read this disclosure</div>
+        <p>[Client Name], this call may be recorded for quality assurance or training purposes, and may be shared with insurance companies who administer plans we offer. Please contact Medicare.gov or 1-800-MEDICARE to get information on all your options.</p>
+      </div>
+      <div class="script-now"><div class="mini">Say this</div><p>Additionally, I want to let you know that the licensed agent offers Medicare Advantage, Medicare Supplement, Prescription Drug Plans, and Dental - Vision - Hearing plans. I would like your permission to discuss all plans the agent offers to find a plan that fits your needs. There is no obligation to enroll and your current or future Medicare enrollment status will not be affected and not to require you to enroll or enroll you automatically in a plan. Is it okay?</p></div>
+      <div class="compliance"><div class="compliance-label">Required checkpoint</div><p><strong>Get an affirmative response before continuing.</strong></p></div>
+      <div class="script-now"><div class="mini">Ask this</div><p>Your age is [AGE], correct?</p></div>
+      <div class="script-now"><div class="mini">Ask this</div><p>Lastly, you have Medicare Parts A &amp; B, right? And how about Medicaid?</p></div>
+      <div class="sticky-note-hint"><strong>Qualification note:</strong> The provided script states the client should have Medicare Parts A &amp; B to qualify. Keep client information in your approved CRM/system, not in this Call Assistant.</div>
+      <button type="button" class="action-btn" onclick="apptChooseDay('proposed')">Affirmative / Qualified — Continue →</button>
+      ${apptNav()}
+    </div>`;
+  } else if(A.stage===3){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 3 of 5</div><h3 class="flow-title">📅 Choose the Day</h3>
+      <div class="script-now"><div class="mini">Ask this</div><p>Would tomorrow or the following day work better for the agent to call?</p></div>
+      <div class="choice-grid">
+        <button type="button" class="choice-btn" onclick="apptChooseDay('tomorrow')"><strong>Tomorrow</strong></button>
+        <button type="button" class="choice-btn" onclick="apptChooseDay('two-days')"><strong>Following Day</strong></button>
+        <button type="button" class="choice-btn" onclick="apptChooseDay('other')"><strong>Another Day</strong></button>
+      </div>
+      ${apptNav()}
+    </div>`;
+  }
+
+  // Stage 4: choose/confirm time
+  if(A.stage===4){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 4 of 5</div><h3 class="flow-title">🕐 Lock In the Time</h3>
+      <div class="script-now"><div class="mini">Ask this</div><p>${isMed?"Let's make sure we have the best time for the licensed agent to call you. What time works best?":"Great. What time works best for you?"}</p></div>
+      <div class="choice-grid">
+        <button type="button" class="choice-btn" onclick="apptChooseTime('morning')"><strong>Morning</strong></button>
+        <button type="button" class="choice-btn" onclick="apptChooseTime('afternoon')"><strong>Afternoon</strong></button>
+        <button type="button" class="choice-btn" onclick="apptChooseTime('evening')"><strong>Evening</strong></button>
+        <button type="button" class="choice-btn" onclick="apptChooseTime('specific')"><strong>Specific Time</strong></button>
+      </div>
+      ${apptNav()}
+    </div>`;
+  }
+
+  // Stage 5: confirmation
+  if(A.stage===5){
+    html+=`<div class="flow-card">
+      <div class="eyebrow">Step 5 of 5</div><h3 class="flow-title">✓ Confirm the Appointment</h3>
+      <div class="script-now"><div class="mini">Say this</div><p>${isMed?"Great! Please remember a licensed agent will call you back on [Appointment Schedule] and answer any questions that you have.":"Perfect. I have you scheduled for [DAY / DATE / TIME]. A licensed "+line+" agent will call you then to answer your questions and go over the options with you."}</p></div>
+      <div class="script-now"><div class="mini">Ask this</div><p>Does that day and time still work for you?</p></div>
+      <div class="choice-grid">
+        <button type="button" class="choice-btn ${A.outcome==="scheduled"?'selected':''}" onclick="apptSetOutcome('scheduled')"><strong>✓ Appointment Confirmed</strong></button>
+        <button type="button" class="choice-btn" onclick="apptNext(4)"><strong>Change Time</strong></button>
+      </div>
+      ${A.outcome==="scheduled"?`<div class="script-now"><div class="mini">Say this</div><p>Great. You're all set. Please keep an eye out for the licensed agent's call at that time. Thank you, and have a great day!</p></div>
+      <div class="sticky-note-hint"><strong>Appointment set:</strong> Enter the confirmed appointment in your approved calendar or CRM. Do not enter sensitive client information in this Call Assistant.</div>`:""}
+      ${apptNav()}
+    </div>`;
+  }
+
+  html+=apptObjections(A.line);
+  return html;
+}
+
 function renderMain(){
   const main = document.getElementById('main');
   if(activeCategory === "assistant"){
@@ -4011,6 +4377,11 @@ function renderMain(){
   }
   if(activeCategory === "life-assistant"){
     main.innerHTML = renderLifeAssistant();
+    return;
+  }
+  if(activeCategory === "appointment-setter"){
+    main.innerHTML = renderAppointmentSetter();
+    if(typeof stylePromptLabels==="function")stylePromptLabels();
     return;
   }
   const cat = DATA.find(c=>c.id===activeCategory && visiblePlaybookCategory(c));
