@@ -1357,6 +1357,14 @@
 
 
 
+
+.mca-opening-choice{margin:10px 0 14px}
+.mca-opening-choice-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.mca-opening-choice-buttons .choice-btn{flex:1 1 180px}
+.mca-opening-choice-buttons .choice-btn.active{outline:3px solid rgba(255,255,255,.28);outline-offset:2px}
+.mca-selected-opening{margin-top:10px}
+.mca-selected-opening .opening{margin:0}
+
 @media(max-width:980px){
   .mca-call-layout{display:block}
   .mca-sticky-summary{display:none}
@@ -1638,8 +1646,8 @@ const DATA = [
     voicemailScript: "Hi [Name], this is [Name] with [Agency] — sorry I missed you! I'm a licensed Medicare agent, and I'm reaching out because you recently looked into your Medicare options. I'd love to go over a couple of things that could either save you money or make sure you're not missing out on any benefits you qualify for — no pressure at all. Give me a call back whenever works for you at [phone number]. Again, this is [Name] with [Agency], and my number is [phone number]. Thanks, and I look forward to connecting!",
     complianceDisclosure: "This call may be recorded for quality assurance or training purposes. We do not offer every plan available in your area. Currently, we represent 0-78 organizations which offer 0-2,613 products in your area. Please contact medicare.gov, 1-800-MEDICARE, or your local State Health Insurance Program (SHIP) to get information on all of your options.",
     openingIntro: "Hi [Name], how are you doing today? This is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself, but —",
-    nameAsk: {tag:"Confirm Name", text:"Before we get started, can I get your full name?"},
-    openingContinued: "Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?",
+    nameAsk: {tag:"Confirm Name", text:"Just for verification, can you confirm your name?"},
+    openingContinued: "Perfect, thank you. I'll help you review and compare your Medicare options and see what makes the most sense for you. If you already have the best option for your needs in your area, I'll let you know that too. To get us started, are you new to Medicare, or do you already have Medicare coverage?",
     intakeScript: [
       {tag:"Date of Birth", text:"Great, thank you. And could I grab your date of birth too? That just helps me make sure everything lines up correctly on my end.", resistance:"Totally understandable! Even just your age range helps me point you in the right direction — are you in your 50s, 60s, or beyond?"},
       {tag:"Zip Code", text:"Perfect — one last quick one, what zip code are you in? Coverage and pricing can vary quite a bit by area, so I want to make sure I'm only showing you what's actually available where you live."}
@@ -1748,7 +1756,7 @@ const DATA = [
     ],
     healthInfoScript: [
       {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
-      {tag:"Medications", text:"What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?"}
+      {tag:"Medications", text:"What prescriptions are you currently taking?<br><br>What’s the dosage?<br><br>And how many do you take each day?<br><br>Do you usually get a 30-day or 90-day supply?<br><br>Any other prescriptions?"}
     ],
     agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
     part5Branches: [
@@ -1980,7 +1988,7 @@ const DATA = [
     ],
     healthInfoScript: [
       {tag:"Doctors", text:"Now that we know a [plan type] is the direction you want to go, can you give me the names of the doctors you currently see? I want to check every one of them against the network before we lock anything in, so nobody gets left out.", resistance:"Absolutely no pressure! Let's pull up the general network for your area first — once you see plans that look promising, you can verify your own doctors on the plan's website, or I can check them with you live at that point. Sound good?"},
-      {tag:"Medications", text:"What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?"}
+      {tag:"Medications", text:"What prescriptions are you currently taking?<br><br>What’s the dosage?<br><br>And how many do you take each day?<br><br>Do you usually get a 30-day or 90-day supply?<br><br>Any other prescriptions?"}
     ],
     agentOnlyNote: "Use a drug cost estimator tool (like Ritter's, or Medicare.gov) with this drug list to check formulary coverage and pricing before you recommend a plan. Note: agent-facing cost estimator tools are for your own prep only — don't show them to the client. Medicare.gov's plan comparison is fine to pull up together with them.",
     part5Branches: [
@@ -2838,7 +2846,7 @@ function renderCallAssistant(){
       <h3 class="flow-title">Prescriptions</h3>
       ${contextualObjections("rx")}
       <div class="script-now"><div class="mini">Transition</div><p>Now let's look at your prescriptions so we can account for drug coverage and costs.</p></div>
-      ${step("Prescriptions",(m.healthInfoScript||[]).find(x=>x.tag==="Medications")?.text || "What prescriptions are you currently taking? For each one, I'll want the drug name, the dosage, the quantity prescribed, and how often you get it filled — every 30 or 90 days?")}
+      ${step("Prescriptions",(m.healthInfoScript||[]).find(x=>x.tag==="Medications")?.text || "What prescriptions are you currently taking?<br><br>What’s the dosage?<br><br>And how many do you take each day?<br><br>Do you usually get a 30-day or 90-day supply?<br><br>Any other prescriptions?")}
     </div>
     <div class="compare-box">
       <button type="button" class="action-btn" onclick="setReadyToCompare()">✓ Ready to Compare Plans</button>
@@ -3176,11 +3184,23 @@ function renderCallAssistant(){
   ${!A.path ? `
   <div class="phone-start">
     <h3>☎ Opening</h3>
-    <div class="opening"><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
+    <div class="mca-opening-choice">
+      <div class="mini">Choose the opening that matches the call</div>
+      <div class="mca-opening-choice-buttons">
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('regular',this)">☎ Regular Medicare Call</button>
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('scheduled',this)">📅 Scheduled Appointment</button>
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('transfer',this)">🔄 Live Transfer</button>
+      </div>
+      <div class="mca-selected-opening">
+        <div class="opening mca-opening-script" data-opening="regular" style="display:none"><div class="mini">☎ REGULAR MEDICARE CALL</div><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
+        <div class="opening mca-opening-script" data-opening="scheduled" style="display:none"><div class="mini">📅 SCHEDULED APPOINTMENT</div><p>Hey [Client Name], I'm [Agent Name]. I'm calling for our scheduled appointment to go over your Medicare options with you.</p></div>
+        <div class="opening mca-opening-script" data-opening="transfer" style="display:none"><div class="mini">🔄 LIVE TRANSFER</div><p>Hi [Client Name], I'm [Agent Name], a licensed Medicare agent. I understand you were just speaking with someone about your Medicare options, and they connected you with me so I can help you from here.</p></div>
+      </div>
+    </div>
     ${m.complianceDisclosure?`<div class="compliance"><div class="compliance-label">Required reading</div><p>${m.complianceDisclosure}</p></div>`:""}
     <div class="opening"><p>How are you doing today?</p></div>
-    ${step("Confirm Name","Before we get started, can I get your full name?")}
-    <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?</p></div>
+    ${step("Confirm Name","Just for verification, can you confirm your name?")}
+    <div class="opening"><p>Perfect, thank you. I'll help you review and compare your Medicare options and see what makes the most sense for you. If you already have the best option for your needs in your area, I'll let you know that too. To get us started, are you new to Medicare, or do you already have Medicare coverage?</p></div>
   </div>
   ${contextualObjections("opening")}
   ` : `
@@ -3191,11 +3211,23 @@ function renderCallAssistant(){
   <div id="mca-completed-opening-detail" style="display:none">
     <div class="phone-start">
       <h3>☎ Opening</h3>
-      <div class="opening"><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
+      <div class="mca-opening-choice">
+      <div class="mini">Choose the opening that matches the call</div>
+      <div class="mca-opening-choice-buttons">
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('regular',this)">☎ Regular Medicare Call</button>
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('scheduled',this)">📅 Scheduled Appointment</button>
+        <button type="button" class="choice-btn" onclick="showMedicareOpening('transfer',this)">🔄 Live Transfer</button>
+      </div>
+      <div class="mca-selected-opening">
+        <div class="opening mca-opening-script" data-opening="regular" style="display:none"><div class="mini">☎ REGULAR MEDICARE CALL</div><p>Hi [Name], this is [Name] — I'm a licensed Medicare agent, and I'm not with Medicare directly myself.</p></div>
+        <div class="opening mca-opening-script" data-opening="scheduled" style="display:none"><div class="mini">📅 SCHEDULED APPOINTMENT</div><p>Hey [Client Name], I'm [Agent Name]. I'm calling for our scheduled appointment to go over your Medicare options with you.</p></div>
+        <div class="opening mca-opening-script" data-opening="transfer" style="display:none"><div class="mini">🔄 LIVE TRANSFER</div><p>Hi [Client Name], I'm [Agent Name], a licensed Medicare agent. I understand you were just speaking with someone about your Medicare options, and they connected you with me so I can help you from here.</p></div>
+      </div>
+    </div>
       ${m.complianceDisclosure?`<div class="compliance"><div class="compliance-label">Required reading</div><p>${m.complianceDisclosure}</p></div>`:""}
       <div class="opening"><p>How are you doing today?</p></div>
-      ${step("Confirm Name","Before we get started, can I get your full name?")}
-      <div class="opening"><p>Perfect, thank you. I help people understand and compare their Medicare options. Let me first find out where you are with Medicare so I can point us in the right direction. Are you new to Medicare, or do you already have Medicare coverage?</p></div>
+      ${step("Confirm Name","Just for verification, can you confirm your name?")}
+      <div class="opening"><p>Perfect, thank you. I'll help you review and compare your Medicare options and see what makes the most sense for you. If you already have the best option for your needs in your area, I'll let you know that too. To get us started, are you new to Medicare, or do you already have Medicare coverage?</p></div>
     </div>
   </div>
   `}
@@ -3462,6 +3494,17 @@ function syncMedicareNotes(value){
   if(desktop && desktop.value!==value) desktop.value=value;
   if(mobile && mobile.value!==value) mobile.value=value;
 }
+function showMedicareOpening(kind,btn){
+  const scope=btn&&btn.closest(".mca-opening-choice");
+  if(!scope)return;
+  scope.querySelectorAll(".mca-opening-script").forEach(el=>{
+    el.style.display=el.dataset.opening===kind?"block":"none";
+  });
+  scope.querySelectorAll(".mca-opening-choice-buttons button").forEach(el=>{
+    el.classList.toggle("active",el===btn);
+  });
+}
+
 function formatMedicareCallStart(iso){
   const d=iso?new Date(iso):new Date();
   if(Number.isNaN(d.getTime())) return "";
