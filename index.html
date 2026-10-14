@@ -4328,7 +4328,7 @@ function renderAppointmentSetter(){
       <div class="eyebrow">Step 1 of 5</div><h3 class="flow-title">☎ Open the Call</h3>
       <div class="script-now"><div class="mini">Say this</div><p>Hi [Client Name], this is [Setter Name] from [Agency / Service Name].</p></div>
       ${apptRecordingDisclosure()}
-      <div class="script-now"><div class="mini">Say this</div><p>${isMed?"I am calling regarding the Medicare plan rates and changes in your area, and one of our LOCAL licensed agents will call you back to go over the new plans in your county.":intros[A.line]}</p></div>
+      <div class="script-now"><div class="mini">Say this</div><p>${isMed?"I’m calling regarding Medicare plan rates and changes in your area. One of our licensed Medicare agents will call you back to review the plans available in your county, compare your Medicare options, and see what makes the most sense for you. If you already have the best option for your needs in your area, they’ll let you know that too.":intros[A.line]}</p></div>
       <button type="button" class="action-btn" onclick="apptNext(2)">Continue to Appointment Ask →</button>
       ${apptNav()}
     </div>`;
