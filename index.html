@@ -2856,6 +2856,51 @@ function renderCallAssistant(){
   };
 
 
+  function getMedicarePriorityOptions(){
+    const N=A.narrow||{};
+    const base=[
+      ["cost","keeping monthly premiums affordable",A.reason==="cost"||N.costStyle==="premium"],
+      ["predictable","having more predictable healthcare costs",N.costStyle==="predictable"],
+      ["doctors","keeping access to your doctors",A.reason==="doctor"||N.providerFlex==="very"],
+      ["rx","getting the prescription coverage you need",A.reason==="rx"||N.rxFuture==="include"||N.rxFuture==="compare"],
+      ["benefits","getting additional benefits",A.reason==="benefits"||N.extras==="very"],
+      ["dental","more dental coverage",false],
+      ["extraBenefits","more benefits",false],
+      ["otc","over-the-counter (OTC) benefits",false],
+      ["food","food card benefits",false],
+      ["flex","flex card benefits",false]
+    ];
+    return base;
+  }
+  function getMedicarePriorityText(){
+    const P=A.priorities||{};
+    const chosen=getMedicarePriorityOptions().filter(([k,,auto])=>P[k]===true||(P[k]!==false&&auto)).map(([,label])=>label);
+    const other=(A.priorityOther||"").trim();
+    if(P.other===true&&other)chosen.push(other);
+    if(!chosen.length)return "the needs we discussed";
+    if(chosen.length===1)return chosen[0];
+    return chosen.slice(0,-1).join(", ")+" and "+chosen[chosen.length-1];
+  }
+  function refreshMedicarePriorityText(){
+    const t=getMedicarePriorityText();
+    document.querySelectorAll(".mca-dynamic-priorities").forEach(el=>el.textContent=t);
+  }
+  function editMedicarePriorities(){
+    const el=document.getElementById("mca-priority-editor");
+    if(el)el.hidden=!el.hidden;
+  }
+  function setMedicarePriority(key,checked){
+    if(!window.MCA.priorities)window.MCA.priorities={};
+    window.MCA.priorities[key]=checked;
+    refreshMedicarePriorityText();
+  }
+  function setMedicareOtherPriority(value){
+    window.MCA.priorityOther=value;
+    if(!window.MCA.priorities)window.MCA.priorities={};
+    window.MCA.priorities.other=!!value.trim();
+    refreshMedicarePriorityText();
+  }
+
   function planReviewSection(){
     const R=A.planReview||{};
     const reactionLabels={
@@ -2869,9 +2914,23 @@ function renderCallAssistant(){
       <h3 class="flow-title">Review Plan Options</h3>
       <p class="flow-sub">Use the plans in your quoter. You do not need to re-enter plan details here.</p>
       <div class="script-now"><div class="mini">Say this</div><p>Based on what you told me was most important, these are the options I think are worth looking at. Let's go through the differences so you can see how each one would work for you.</p></div>
+      <div class="script-now"><div class="mini">Say this — Introduce the Plan</div><p>I've found a plan that addresses what you told me matters most: <strong class="mca-dynamic-priorities">${getMedicarePriorityText()}</strong>. The full name of the plan is <strong>[SAY FULL PLAN NAME]</strong>. Let's review its Summary of Benefits together so you can see exactly what's covered and what it costs.</p></div>
+      <div class="mca-priority-controls"><button type="button" class="mini-choice" onclick="editMedicarePriorities()">✎ Edit Priorities</button>
+        <div id="mca-priority-editor" hidden>
+          <p class="flow-sub">Choose what matters to the client. Prior answers are preselected; you can add or remove priorities here.</p>
+          <div class="priority-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px">
+          ${getMedicarePriorityOptions().map(([key,label,auto])=>`<label style="display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #dce3e8;border-radius:9px"><input type="checkbox" ${A.priorities?.[key]===true||(A.priorities?.[key]!==false&&auto)?'checked':''} onchange="setMedicarePriority('${key}',this.checked)"> ${label}</label>`).join('')}
+          </div>
+          <label style="display:block;margin-top:12px;font-weight:700">Other priority (type your own)
+            <input type="text" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:10px;border:1px solid #ccd5df;border-radius:8px" placeholder="e.g., transportation, hearing aids, fitness" value="${(A.priorityOther||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" oninput="setMedicareOtherPriority(this.value)">
+          </label>
+          <p class="flow-sub">Only describe a benefit as included after verifying it in the specific plan's Summary of Benefits.</p>
+        </div>
+      </div>
+      <div class="compliance"><div class="compliance-label">Agent reminder — Summary of Benefits</div><p>Open the official Summary of Benefits for the specific plan and year in your approved carrier/quoter system. Go over the relevant coverage, costs, limitations, and benefits with the client; verify that the plan actually meets the priorities you mention.</p></div>
 
       <div class="review-checklist">
-        <div class="summary-row"><span>1. Coverage & premium</span><strong>Review the plan type and monthly premium shown in the quoter.</strong></div>
+        <div class="summary-row"><span>1. Coverage & premium</span><strong>Review the plan type and monthly premium shown in the Summary of Benefits. <br><br>⚠️ <em>Say this when discussing the premium:</em> “You must continue paying your Medicare Part B premium, even if this plan has a $0 monthly plan premium, unless another program pays it for you.”</strong></div>
         <div class="summary-row"><span>2. Doctors & network</span><strong>Confirm the doctors, specialists, facilities, and network considerations that mattered to the client.</strong></div>
         <div class="summary-row"><span>3. Prescriptions & pharmacy</span><strong>Review drug coverage and pharmacy costs when prescription coverage applies.</strong></div>
         <div class="summary-row"><span>4. Healthcare costs</span><strong>Compare the important copays, coinsurance, deductibles, and applicable out-of-pocket limits shown for the options.</strong></div>
@@ -3020,10 +3079,23 @@ function renderCallAssistant(){
         ${btn("unsure","Not Sure","","current")}
       </div>`;
     } else if(!A.reason){
+      const reasons=[
+        ["cost","Cost / Premium","cost"],["doctor","Doctor / Network","doctors"],
+        ["rx","Prescriptions","rx"],["benefits","More Benefits","extraBenefits"],
+        ["dental","Extra Dental","dental"],["otc","Over-the-Counter (OTC)","otc"],
+        ["food","Food Card","food"],["flex","Flex Card","flex"],
+        ["changed","Plan Changed",null],["moving","Moving",null],
+        ["compare","Just Comparing",null],["other","Other", "other"]
+      ];
       body=`<div class="script-now"><div class="mini">Next</div><p>And what has you looking at your options today?</p></div>
-      <div class="choice-grid">
-        <button type="button" class="choice-btn ${A.reason==="cost"?"selected":""}" onclick="window.MCA.reason='cost';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Cost / Premium</strong></button><button type="button" class="choice-btn ${A.reason==="doctor"?"selected":""}" onclick="window.MCA.reason='doctor';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Doctor / Network</strong></button><button type="button" class="choice-btn ${A.reason==="rx"?"selected":""}" onclick="window.MCA.reason='rx';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Prescriptions</strong></button><button type="button" class="choice-btn ${A.reason==="benefits"?"selected":""}" onclick="window.MCA.reason='benefits';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Benefits</strong></button><button type="button" class="choice-btn ${A.reason==="changed"?"selected":""}" onclick="window.MCA.reason='changed';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Plan Changed</strong></button><button type="button" class="choice-btn ${A.reason==="moving"?"selected":""}" onclick="window.MCA.reason='moving';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Moving</strong></button><button type="button" class="choice-btn ${A.reason==="compare"?"selected":""}" onclick="window.MCA.reason='compare';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Just Comparing</strong></button><button type="button" class="choice-btn ${A.reason==="other"?"selected":""}" onclick="window.MCA.reason='other';window.MCA.compare=false;window.MCA.outcome='';window.MCA.elig={};window.MCA.narrow={};window.MCA.narrowContinue=false;window.MCA.priorities={};renderMain();"><strong>Something Else</strong></button>
-      </div>`;
+      <div class="flow-card"><div class="mini">Select all that apply</div>
+      <div class="priority-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px;margin-top:12px">
+        ${reasons.map(([key,label])=>`<label style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #dce3e8;border-radius:10px;cursor:pointer"><input type="checkbox" ${A.reviewReasons?.[key]?'checked':''} onchange="setMedicareReviewReason('${key}',this.checked)"><span>${label}</span></label>`).join('')}
+      </div>
+      <label style="display:block;margin-top:12px;font-weight:700">Other — describe what they're looking for
+        <input type="text" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:10px;border:1px solid #ccd5df;border-radius:8px" placeholder="Type another priority" value="${(A.priorityOther||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" oninput="setMedicareReviewOther(this.value)">
+      </label>
+      <div class="narrow-actions" style="margin-top:14px"><button type="button" class="action-btn" onclick="continueMedicareReviewReasons()">Continue →</button></div></div>`;
     } else {
       body=`${!A.currentReviewDone?`<div class="script-now"><div class="mini">Say this</div><p>Got it. Let's focus on what isn't working with your current coverage and make sure any option we compare actually improves the things that matter to you.</p></div>
       <div class="flow-card"><h3 class="flow-title">Current Plan Review</h3>
@@ -3263,6 +3335,28 @@ function chooseTurn65Need(value){
   window.MCA.narrow={};
   window.MCA.narrowContinue=false;
   window.MCA.priorities={};
+  renderMain();
+}
+function setMedicareReviewReason(key,checked){
+  const A=window.MCA;if(!A)return;
+  A.reviewReasons=A.reviewReasons||{};A.reviewReasons[key]=checked;
+  const priorityKey={cost:"cost",doctor:"doctors",rx:"rx",benefits:"extraBenefits",dental:"dental",otc:"otc",food:"food",flex:"flex",other:"other"}[key];
+  if(priorityKey){A.priorities=A.priorities||{};A.priorities[priorityKey]=checked;}
+}
+function setMedicareReviewOther(value){
+  const A=window.MCA;if(!A)return;
+  A.priorityOther=value;
+  A.reviewReasons=A.reviewReasons||{};
+  A.reviewReasons.other=!!value.trim();
+  A.priorities=A.priorities||{};A.priorities.other=!!value.trim();
+}
+function continueMedicareReviewReasons(){
+  const A=window.MCA;if(!A)return;
+  const chosen=Object.keys(A.reviewReasons||{}).filter(k=>A.reviewReasons[k]);
+  if(!chosen.length){alert("Select at least one reason to continue.");return;}
+  const map={cost:"cost",doctor:"doctor",rx:"rx",benefits:"benefits",dental:"benefits",otc:"benefits",food:"benefits",flex:"benefits",changed:"changed",moving:"moving",compare:"compare",other:"other"};
+  A.reason=map[chosen[0]]||"other";
+  A.compare=false;A.outcome="";A.elig={};A.narrow={};A.narrowContinue=false;
   renderMain();
 }
 function chooseCurrentReason(value){
